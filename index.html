@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufactured World</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #111;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .text-box {
+            width: 80%;
+            max-width: 800px;
+            height: 60vh;
+            padding: 20px;
+            border: 2px solid #444;
+            border-radius: 5px;
+            background-color: #222;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .input-field {
+            width: 80%;
+            max-width: 800px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 5px;
+        }
+        
+        b {
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+        
+        i {
+            color: #81c784;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="text-box" id="textBox">
+        <!-- Content will be inserted by JavaScript -->
+    </div>
+    <input type="text" class="input-field" id="inputField" placeholder="Type your response...">
+
+    <script>
+        // Game pages
+        const pages = [
+            {
+                content: `Welcome to the (Manufactured) World.
+You were born into a life already planned, you are a cog in a machine too massive and protected to stop. Towering above the dead Earth are the [Manufactured] Towns, massive hunks of metal and concrete grids suspended in the sky, each one feels less like a town and more of an inescapable prison. The rich live above these towns in lavish fortresses you'll never get inside of. As you've been told since birth, you are there to serve the rich and nothing else. Everyone is assigned a job by the (TaskMaster), a glowing slab embedded in everyone's living quarters. You are expected to wait inside until the TaskMaster tells you what to do. You cannot say no to the TaskMaster, unless you want the rich to dispose of you. Inside of everyone's houses is a gas valve, when activated it sprays a deadly neurotoxin that kills whoever inhales it in seconds. It even rots living matter, so cleanup of defectors is easier. Refusing to do the assigned job, being late to the job, or failing the assigned job will make you a defector. The TaskMaster will lock your door, fill the room with gas, and the city forgets you. Before and after each job you have free time, but you know that these cold curated hours are nothing more than an illusion of freedom.
+
+The job you have been given for the past few years of your lives is a (Hunter). One of the most dangerous jobs in the system. While everyone else washes buildings, ensures programs are working correctly, or makes music to entertain the rich, your job is to descend onto the shattered remnants of the world you live on, referred to as [The Below], and retrieve whatever the TaskMaster tells you. The Below is plagued with rabid evolution and unnatural creations. The rich have played god for many years, conducting experiments without ethics, logic, or restraint. While ecosystems have mutated so much they are almost indistinguishable from what they used to be a year ago. Despite the massive danger, this is the only place where the machine can't watch or monitor you, this hostile wasteland is the only place you can breathe and see the humongous mansions the rich have built.
+
+You've been born into a hostile world where stepping out of line is the difference between life and death. There's no second chances, no saying no. Don't come back empty handed.
+
+Type "Next" to continue`,
+                nextInput: "next"
+            },
+            {
+                content: "Page 2 content will go here...",
+                nextInput: ""
+            }
+        ];
+
+        // Current page index
+        let currentPage = 0;
+        const textBox = document.getElementById('textBox');
+        const inputField = document.getElementById('inputField');
+
+        // Format text with () for bold and [] for italics
+        function formatText(text) {
+            // Replace (word) with <b>word</b>
+            text = text.replace(/\((.*?)\)/g, '<b>$1</b>');
+            // Replace [word] with <i>word</i>
+            text = text.replace(/\[(.*?)\]/g, '<i>$1</i>');
+            // Preserve line breaks
+            text = text.replace(/\n/g, '<br>');
+            return text;
+        }
+
+        // Load current page
+        function loadPage() {
+            if (currentPage < pages.length) {
+                textBox.innerHTML = formatText(pages[currentPage].content);
+                inputField.value = '';
+                inputField.focus();
+            }
+        }
+
+        // Handle input
+        inputField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const input = this.value.trim().toLowerCase();
+                if (currentPage === 0 && input === 'next') {
+                    currentPage++;
+                    loadPage();
+                }
+                // Add more conditions for other pages as needed
+            }
+        });
+
+        // Initialize
+        loadPage();
+    </script>
+</body>
+</html>
