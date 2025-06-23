@@ -143,11 +143,61 @@ You can head to the public feeding areas to get food for your day, the equipment
                     { input: "teaching center", goto: 8 },
                 ]
             }
+            {
+            content: `You head over to the public feeding areas, following the streams of people doing the exact same thing. The only thing you can hear is a symphony of synchronized footsteps and the occasional sniff. A voice comes over the PA system on the street "Optimal nourishment window now open. Dining Venue 13 is almost full, members of Blocks R through Z proceed to Dining Venue 14. Remember, nutrition is privilege."
+    
+            As you're walking along with the crowd of people, you see a wide metallic arch looming over you, and that can only mean one thing. Dining Venue 13. You head through the arch and enter the revolving doors. As you move around the large circular area, the door suddenly stops. After a moment of silence a BEEP is heard and a green light turns on. The door continues to move, letting you into the uninspiring and bland Dining Venue 13.
+            
+            Rows of copy and paste benches and tables stretch like military lines. Everything from the floor, tables, and treys is a dull shade of off-white, the only colour is in the food wall at the opposite end of the room, being a nice stainless steel grey. The food wall stretches across the entirety of the west wall, softly humming with energy and is covered with hundreds of letter-number compartments. Everything from A1 to Z26. As far as you can tell, it works like a mail sorter mixed with a vending machine. Each cell is sealed behind a black flap and as you move down the line of people, you come face to face with a board looking attendant, a young man with tired eyes and a clipboard, sounding just as robotic as the machines you're around every day. "Name?" he asks. (everyone in the party says their name)
+            (one line for each party member, or make up your own)
+            "B12, next."
+            "R19, next."
+            "G6, next."
+            "U22, next."
+            "D20, next." - if a player rolls a D20 they get healed 1 health
+            
+            As each person approaches the wall, the flaps open up and gently push a food try towards the end. Each trey and its contents look identical. Dull nutrient paste, two dense blobs marketed as buns, a hydration cube, and a vanilla stick. As you pull the trey out, the coils behind the flap spiral, pushing the next meal forward. After grabbing your sad excuse for food, you make your way to your table along with everyone else who you've come to call your neighbours. No one talks as there aren't any explicit rules saying it's ok to do so. The only thing you can hear is the deafening silence and the mostly synchronized crunches of food. Looking down at your trey all of you find an identical note that reads
+            "GOOD LUCK HUNTERS, YOUR PERFORMANCE IS VERY MEANINFUL TO THIS ECOSYSTEM. Signed industrial entertainment committee"
+            As well as an identical supply of food and nutrition capsules for your journey. Everyone roll 1D8 to see what pills you get.
+            1- (pill box 1) VB pill x2, Syn pill x2
+            2- (pill box 2) B-mine pill x3, VB pill x1
+            3- (pill box 3) Unil pill x2, B-Mine pill x1, Syn pill x1
+            4- (Pill box 4) Syn pill x3, B-Mine pill x1
+            5- (pill box 5) All pills x1
+            6- (pill box 6) B-Mine pill x2, Unil pill x2
+            7- (pill box 7) VB pill x2, B-Mine pill x2
+            8- (pill box 8) VB pill x3, Unil pill x1`,
+                        nextInput: "next", goto: 3
+            },
+            {
+            content: `You make your way over to Block 12, Equipment Support & Disposal. -1 TP
+
+            Upon opening the doors, the smell of rust, burnt rubber, and sanitizer assaults your nose. The only thing making noise are the fluorescent lights buzzing. As you stroll through the isles looking at all the different tools that are available, you see the front desk. A lanky man with a white bearded tucked into his collar. He looks at you with a blank expression, then says "Nothing is for sale right now, the machine didn't specify what needed to go. You can grab something from there though" pointing to a large machine with a scanner on the front.
+                        Items: upon using the scanner, the player rolls 1D10
+            1: Mini flare [Light] [30 FT] - Target a 10 × 10 FT area, anything inside has Blind 2 until the end of their turn on a failed END save [0 TP]
+            2: Hooked rope [Attack] [25 FT] - Pull something towards you, if it is a unit, they make an optional PWR save, on fail or on no save it is pulled towards you [0 TP]
+            3: Med kit [10 FT] - Heal a target for 5 Health and remove Bleeding [0 TP]
+            4: Sound canister - Emits an ear piercing sound in a 30 FT range around you, anything that isn’t braced for the sound and is in a 10 FT range makes an INS save, any that fail are Shaken and anything targeting them has a +2 to Hit until the start of their next turn [0 TP]
+            5: Protein patch - [10 FT] Gives target +2 to Hit on all [Attack] rolls and +1 to PWR saves until the end of their next turn [0 TP]
+            6: Wheat blanket - Can be worn to gain +1 to all AGI rolls until the end of your next turn, or lit on fire to create Fire for 2 turns [0 TP]
+            7: Air dry paste [10 FT] - Can be put onto something to create a hard plastic like substance until it is destroyed [0 TP] {When applying it to a unit, that unit has Bleeding stopped until the shield is destroyed and gains a 4 Health shield until it’s destroyed, can be put on terrain to give an 8 Health shield until destroyed}
+            8: Bolt buzzer [30 FT] - Can be thrown to apply Shaken a unit and deal 3 damage [0 TP]
+            9: Smoke baton - Create Smoke within a 10 FT area around you [0 TP]
+            10: Crawler bait [30 FT] - Target an empty space, the all insects in a 5 FT range make an INS save of 13+, any that fail are Shaken and look at the bait [0 TP]
+            Type "scan" to use the scanner${scannerUses >= 2 ? " (costs 1 TP)" : ""} or "leave" to exit.`,
+                        options: [
+                            { input: "scan", action: "useScanner" },
+                            { input: "leave", goto: 3 } // Return to location selection
+                        ]
+            }
+        
+            ];
         ];
 
         // Game state
         let currentPage = 0;
         let tp = 5;
+        let scannerUses = 0;
         const textBox = document.getElementById('textBox');
         const inputField = document.getElementById('inputField');
         const tpCounter = document.getElementById('tpCounter');
@@ -175,32 +225,102 @@ You can head to the public feeding areas to get food for your day, the equipment
             }
         }
 
-        // Handle input
-        inputField.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const input = this.value.trim().toLowerCase();
-                
-                // Page 0 has simple next input
-                if (currentPage === 0 && input === 'next') {
-                    currentPage = 1;
-                    loadPage();
-                }
-                // Page 1 has multiple options
-                else if (currentPage === 1) {
-                    const page = pages[1];
-                    for (const option of page.options) {
-                        if (input === option.input.toLowerCase()) {
-                            currentPage = option.goto;
-                            loadPage();
-                            return;
-                        }
-                    }
-                    // If no valid option was entered
-                    alert('Invalid command. Try "Next", "Search", or "Look around"');
-                }
-                // Handle other pages as needed
+        // Handle scanner use
+        function useScanner() {
+        if (scannerUses >= 2) {
+            // Check if player has enough TP for additional scans
+            if (tp <= 0) {
+                textBox.innerHTML = formatText("You don't have enough TP to use the scanner again!");
+                return;
             }
-        });
+            tp -= 1;
+            updateTP();
+        }
+
+        scannerUses++;
+        let result = "";
+
+        if (scannerUses === 1) {
+            // First use - automatic success
+            const roll = Math.floor(Math.random() * 10) + 1;
+            result = `You stick your face in the scanner and the machine flashes green, roll 1D10 for an item!\n\nYou got: ${scannerItems[roll-1]}`;
+        } 
+        else if (scannerUses === 2) {
+            // Second use - ALL roll needed
+            const allRoll = Math.floor(Math.random() * 10) + 1; // Simulating 1D10 roll
+            if (allRoll >= 5) {
+                const itemRoll = Math.floor(Math.random() * 10) + 1;
+                result = `You stick your face in the scanner, make an ALL roll now!\n\nYou rolled ${allRoll} (needed 5+)\nThe machine flashes green, roll 1D10 for an item!\n\nYou got: ${scannerItems[itemRoll-1]}`;
+            } else {
+                result = `You stick your face in the scanner, make an ALL roll now!\n\nYou rolled ${allRoll} (needed 5+)\nThe machine flashes red, no items for now.`;
+            }
+        } 
+        else {
+            // Subsequent uses - harder ALL roll
+            const allRoll = Math.floor(Math.random() * 10) + 1; // Simulating 1D10 roll
+            if (allRoll >= 10) {
+                const itemRoll = Math.floor(Math.random() * 10) + 1;
+                result = `You stick your face in the scanner, make an ALL roll now!\n\nYou rolled ${allRoll} (needed 10+)\nThe machine flashes green, roll 1D10 for an item!\n\nYou got: ${scannerItems[itemRoll-1]}`;
+            } else {
+                result = `You stick your face in the scanner, make an ALL roll now!\n\nYou rolled ${allRoll} (needed 10+)\nThe machine flashes red, no items for now.`;
+            }
+        }
+
+        // Handle input
+    inputField.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const input = this.value.trim().toLowerCase();
+            
+            // Page 0 has simple next input
+            if (currentPage === 0 && input === 'next') {
+                currentPage = 1;
+                loadPage();
+            }
+            // Page 1 has multiple options
+            else if (currentPage === 1) {
+                const page = pages[1];
+                for (const option of page.options) {
+                    if (input === option.input.toLowerCase()) {
+                        // Subtract TP based on the option chosen
+                        if (option.goto === 4) { // Feeding areas
+                            tp -= 2;
+                            if (tp < 0) tp = 0;
+                            updateTP();
+                            
+                            // Check if TP reached 0
+                            if (tp <= 0) {
+                                textBox.innerHTML = formatText("You ran out of TP! The TaskMaster detects your non-compliance and activates the gas valve. Everything fades to black...");
+                                inputField.disabled = true;
+                                return;
+                            }
+                        }
+                        else if (option.goto === 5 || option.goto === 6) { // Equipment or music store
+                            tp -= 1;
+                            if (tp < 0) tp = 0;
+                            updateTP();
+                            
+                            if (tp <= 0) {
+                                textBox.innerHTML = formatText("You ran out of TP! The TaskMaster detects your non-compliance and activates the gas valve. Everything fades to black...");
+                                inputField.disabled = true;
+                                return;
+                            }
+                        }
+                        
+                        currentPage = option.goto;
+                        loadPage();
+                        return;
+                    }
+                }
+                // If no valid option was entered
+                alert('Invalid command. Try "Next", "Search", or "Look around"');
+            }
+            // Handle other pages as needed
+            else if (currentPage === 4 && input === 'next') {
+                currentPage = /* next page number after feeding */;
+                loadPage();
+            }
+        }
+    });
 
         // Initialize
         loadPage();
