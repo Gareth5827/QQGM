@@ -123,9 +123,18 @@ You've been born into a hostile world where stepping out of line is the differen
             // Add more pages here as needed
         };
         
-        // Update TP display
+        // Update TP display and check for kill condition
         function updateTP() {
             document.getElementById('TPCounter').textContent = tp;
+            if (tp <= 0) {
+                showKillPage();
+            }
+        }
+        
+        // Show the kill page
+        function showKillPage() {
+            document.getElementById('TextBox').innerHTML = 
+                "You have failed... As you frantically make your way to the drop point, dark robed figures quickly surround you and everything fades to black. You have died.<br><br>Type \"retry\" to try again.";
         }
         
         // Format text with () as bold and [] as italic
@@ -151,6 +160,14 @@ You've been born into a hostile world where stepping out of line is the differen
         function handleInput() {
             const input = document.getElementById('InputField').value.toLowerCase();
             document.getElementById('InputField').value = '';
+            
+            if (tp <= 0 && input === 'retry') {
+                // Reset game
+                tp = 5;
+                updateTP();
+                displayPage(1);
+                return;
+            }
             
             if ((input === 'next' || input === 'continue') && currentPage === 1) {
                 // For now, just show page 1 again since we don't have page 2 content
