@@ -22,6 +22,13 @@
             top: 20px;
             right: 20px;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tp-controls {
+            display: flex;
             align-items: center;
             gap: 10px;
         }
@@ -90,9 +97,12 @@
 </head>
 <body>
     <div id="TPContainer">
-        <button class="tp-button" id="TPMinus">-</button>
-        <div id="TPCounter">5</div>
-        <button class="tp-button" id="TPPlus">+</button>
+        <div style="text-align: center; margin-bottom: 5px; font-size: 14px;">TP remaining</div>
+        <div class="tp-controls">
+            <button class="tp-button" id="TPMinus">-</button>
+            <div id="TPCounter">5</div>
+            <button class="tp-button" id="TPPlus">+</button>
+        </div>
     </div>
     <div id="TextBox"></div>
     <input type="text" id="InputField" placeholder="Type your response here...">
