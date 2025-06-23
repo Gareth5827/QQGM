@@ -119,8 +119,27 @@ You were born into a life already planned, you are a cog in a machine too massiv
 
 The job you have been given for the past few years of your lives is a Hunter. One of the most dangerous jobs in the system. While everyone else washes buildings, ensures programs are working correctly, or makes music to entertain the rich, your job is to descend onto the shattered remnants of the world you live on, referred to as (The Below), and retrieve whatever the TaskMaster tells you. The Below is plagued with rabid evolution and unnatural creations. The rich have played god for many years, conducting experiments without ethics, logic, or restraint. While ecosystems have mutated so much they are almost indistinguishable from what they used to be a year ago. Despite the massive danger, this is the only place where the machine can't watch or monitor you, this hostile wasteland is the only place you can breathe and see the humongous mansions the rich have built.
 
-You've been born into a hostile world where stepping out of line is the difference between life and death. [There's no second chances, no saying no.] Don't come back empty handed.`
-            // Add more pages here as needed
+You've been born into a hostile world where stepping out of line is the difference between life and death. [There's no second chances, no saying no.] Don't come back empty handed.
+
+Type "next" to continue.`
+        options: {
+            "next": 2,
+            "continue": 2
+        }
+            2: "As you reminisce of what the world around you is like and what your life has been like, you wake up from your “dream” with the same stale tone you’ve woken up to for many years prior. The TaskMaster awakes, turning on the stale florescent lighting in your living quarters. The small greyscale plastic and metal room lights up and you jump to your feet, getting in front the TaskMaster as soon as you can. You know what would happen if you didn’t.
+
+The TaskMasters screen is blank for a few moments, but after some silence, your job is displayed.
+Objective(s): Descend into the wildgrass region, eliminate toxin beetle infestation
+Target(s): Elder toxin beetles
+Condition(s): Do not kill any egg sacks or larvae
+
+The text lingers for a few moments before disappearing all at once. It plays a soft and hollow jingle before displaying a large 3 hour timer. It begins ticking down and your mounted map of the city highlights the drop point you need to get to before break time is over.
+
+The TaskMaster says “Compliance window is now active. Please optimize your systems. Rest, hydrate, and refuel.” and the room returns to stillness. PLAYERS HAVE 5 TP! If they do not reach the drop point when TP hits 0, they will be killed."
+            options:{
+                "look around": 3,
+                "continue": 4
+        }
         };
         
         // Update TP display and check for kill condition
@@ -151,31 +170,41 @@ You've been born into a hostile world where stepping out of line is the differen
         // Display a page
         function displayPage(pageNum) {
             if (pages[pageNum]) {
-                document.getElementById('TextBox').innerHTML = formatText(pages[pageNum]);
+                let pageContent = pages[pageNum].content;
+                
+                // Add available commands hint
+                const commands = Object.keys(pages[pageNum].options).join(", ");
+                pageContent += `<br><br><i>Available commands: ${commands}</i>`;
+                
+                document.getElementById('TextBox').innerHTML = formatText(pageContent);
                 currentPage = pageNum;
             }
         }
         
-        // Handle input
         function handleInput() {
-            const input = document.getElementById('InputField').value.toLowerCase();
+            const input = document.getElementById('InputField').value.toLowerCase().trim();
             document.getElementById('InputField').value = '';
-            
+        
+            // Handle retry first
             if (tp <= 0 && input === 'retry') {
-                // Reset game
                 tp = 5;
                 updateTP();
                 displayPage(1);
                 return;
             }
-            
-            if ((input === 'next' || input === 'continue') && currentPage === 1) {
-                // For now, just show page 1 again since we don't have page 2 content
-                // In your full implementation, you would advance to page 2 here
-                displayPage(1);
-                alert("This would advance to page 2 in the full implementation");
+        
+            // Check if input matches any option for current page
+            if (pages[currentPage].options[input]) {
+                const nextPage = pages[currentPage].options[input];
+                displayPage(nextPage);
+                
+                // Optional: Add TP modifications for specific choices
+                if (input === 'run') tp -= 2; // Example penalty
+                updateTP();
+            } else {
+                // Optional: Show error for invalid input
+                alert("Invalid choice! Try something else.");
             }
-            // Add more input handling as needed
         }
         
         // Initialize the game
