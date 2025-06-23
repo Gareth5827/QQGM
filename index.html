@@ -53,12 +53,21 @@
             color: #81c784;
             font-style: italic;
         }
+        
+        .tp-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #333;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #444;
+        }
     </style>
 </head>
 <body>
-    <div class="text-box" id="textBox">
-        <!-- Content will be inserted by JavaScript -->
-    </div>
+    <div class="tp-counter" id="tpCounter">TP: 5</div>
+    <div class="text-box" id="textBox"></div>
     <input type="text" class="input-field" id="inputField" placeholder="Type your response...">
 
     <script>
@@ -76,25 +85,84 @@ Type "Next" to continue`,
                 nextInput: "next"
             },
             {
-                content: "Page 2 content will go here...",
-                nextInput: ""
+                content: `As you reminisce of what the world around you is like and what your life has been like, you wake up from your [dream] with the same stale tone you've woken up to for many years prior. The TaskMaster awakes, turning on the stale florescent lighting in your living quarters. The small greyscale plastic and metal room lights up and you jump to your feet, getting in front the TaskMaster as soon as you can. You know what would happen if you didn't.
+
+The TaskMasters screen is blank for a few moments, but after some silence, your job is displayed.
+Objective(s): Descend into the wildgrass region, eliminate toxin beetle infestation
+Target(s): Elder toxin beetles
+Condition(s): Do not kill any egg sacks or larvae
+
+The text lingers for a few moments before disappearing all at once. It plays a soft and hollow jingle before displaying a large 3 hour timer. It begins ticking down and your mounted map of the city highlights the drop point you need to get to before break time is over.
+
+The TaskMaster says "Compliance window is now active. Please optimize your systems. Rest, hydrate, and refuel." and the room returns to stillness. (PLAYERS HAVE 5 TP! If they do not reach the drop point when TP hits 0, they will be killed.)`,
+                options: [
+                    { input: "next", goto: 3 },
+                    { input: "search", goto: 2 },
+                    { input: "look around", goto: 2 }
+                ]
+            },
+            {
+                content: "Looking around the room: You peer around your room, looking at the little belongings you have.
+
+Behind you are the sterile plastic bunk beds with leather straps.
+In front of you is the TaskMaster terminal.
+To the left is your pulsing city map. (drop point is pulsing)
+And to the right are your lockers and utility bins. This is as close to a room as you get, each locker can only hold a couple small items, and in front of the lockers is your bin of work gear.",
+                nextInput: "Next"
+            },
+            {
+                content: "Players have a choice:
+Head to public feeding areas (eat and grab food before leaving) -2 TP
+Head to equipment store (can buy stuff) -1 TP
+Head to music store (can listen to AI music, grants a buff on your next adventure) -1 TP
+Isolation meditation cells (can upgrade abilities) {can upgrade an ability you have for -1 TP for +1, -2 for +2, etc}
+Advanced teaching centre (can learn new abilities)
+
+As you leave your living quarters, the clock ticks down. You have a very small amount of freedom, but freedom nontheless.
+You can head to the public feeding areas to get food for your day, the equipment store for items, the music store for buffs, the teaching centre for new abilities, and the meditation pods for ability upgrades.",
+                options: [
+                    { input: "feeding", goto: 4 },
+                    { input: "food", goto: 4 },
+                    { input: "public feeding areas", goto: 4 },
+                    { input: "feeding areas", goto: 4 },
+                    { input: "tools", goto: 5 },
+                    { input: "equipment", goto: 5 },
+                    { input: "equipment store", goto: 5 },
+                    { input: "tunes", goto: 6 },
+                    { input: "music store", goto: 6 },
+                    { input: "music", goto: 6 },
+                    { input: "meditation", goto: 7 },
+                    { input: "meditation cells", goto: 7 },
+                    { input: "isolation cells", goto: 7 },
+                    { input: "isolation meditation cells", goto: 7 },
+                    { input: "teaching", goto: 8 },
+                    { input: "advanced teaching", goto: 8 },
+                    { input: "advanced teaching centre", goto: 8 },
+                    { input: "advanced teaching center", goto: 8 },
+                    { input: "teaching centre", goto: 8 },
+                    { input: "teaching center", goto: 8 },
+                ]
             }
         ];
 
-        // Current page index
+        // Game state
         let currentPage = 0;
+        let tp = 5;
         const textBox = document.getElementById('textBox');
         const inputField = document.getElementById('inputField');
+        const tpCounter = document.getElementById('tpCounter');
 
         // Format text with () for bold and [] for italics
         function formatText(text) {
-            // Replace (word) with <b>word</b>
             text = text.replace(/\((.*?)\)/g, '<b>$1</b>');
-            // Replace [word] with <i>word</i>
             text = text.replace(/\[(.*?)\]/g, '<i>$1</i>');
-            // Preserve line breaks
             text = text.replace(/\n/g, '<br>');
             return text;
+        }
+
+        // Update TP counter display
+        function updateTP() {
+            tpCounter.textContent = `TP: ${tp}`;
         }
 
         // Load current page
@@ -103,6 +171,7 @@ Type "Next" to continue`,
                 textBox.innerHTML = formatText(pages[currentPage].content);
                 inputField.value = '';
                 inputField.focus();
+                updateTP();
             }
         }
 
@@ -110,11 +179,26 @@ Type "Next" to continue`,
         inputField.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const input = this.value.trim().toLowerCase();
+                
+                // Page 0 has simple next input
                 if (currentPage === 0 && input === 'next') {
-                    currentPage++;
+                    currentPage = 1;
                     loadPage();
                 }
-                // Add more conditions for other pages as needed
+                // Page 1 has multiple options
+                else if (currentPage === 1) {
+                    const page = pages[1];
+                    for (const option of page.options) {
+                        if (input === option.input.toLowerCase()) {
+                            currentPage = option.goto;
+                            loadPage();
+                            return;
+                        }
+                    }
+                    // If no valid option was entered
+                    alert('Invalid command. Try "Next", "Search", or "Look around"');
+                }
+                // Handle other pages as needed
             }
         });
 
