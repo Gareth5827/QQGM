@@ -93,75 +93,6 @@
             color: #6bff6b;
             font-style: italic;
         }
-
-        /* Battle system styles */
-        #BattleContainer {
-            display: none;
-            width: 80%;
-            height: 70vh;
-            margin-top: 60px;
-            position: relative;
-        }
-
-        /* Add these styles to your existing CSS */
-        #BattleGrid {
-            grid-template-columns: repeat(var(--cols, 6), 60px); /* Fixed width cells */
-            grid-template-rows: repeat(var(--rows, 6), 60px); /* Fixed height cells */
-        }
-        
-        .grid-cell {
-            width: 60px;
-            height: 60px;
-            min-width: 60px;
-            min-height: 60px;
-        }
-        
-        .token {
-            width: 40px; /* Smaller fixed size */
-            height: 40px;
-            transition: transform 0.1s;
-            transform: scale(1) !important; /* Prevent scaling during drag */
-        }
-        
-        .token.dragging {
-            opacity: 0.8;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-        }
-        
-        #BattleImage {
-            position: absolute;
-            opacity: 0.8; /* Make it faint so tokens are visible */
-            z-index: 1;
-        }
-
-        .grid-label {
-            position: absolute;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .column-label {
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .row-label {
-            top: 50%;
-            left: 5px;
-            transform: translateY(-50%);
-        }
-
-        .enemy-token {
-            background-color: #ff6b6b;
-            border: 2px solid #ff0000;
-        }
-
-        .ally-token {
-            background-color: #6bff6b;
-            border: 2px solid #00ff00;
-        }
     </style>
 </head>
 <body>
@@ -174,33 +105,12 @@
         </div>
     </div>
     <div id="TextBox"></div>
-    <div id="BattleContainer">
-        <img id="BattleImage" src="" alt="Battle Map">
-        <div id="BattleGrid"></div>
-    </div>
     <input type="text" id="InputField" placeholder="Type your response here...">
     
     <script>
         // Game state
         let currentPage = 1;
         let tp = 5;
-        
-        // Battle definitions
-        const battles = {
-            "Battle1": {
-                image: "Battle1.png",
-                width: 6,
-                height: 6,
-                enemyTokens: ["A1", "B2", "A3"],
-                allyTokens: ["F6", "E5", "F4"]
-            },
-            // Add more battles as needed
-        };
-
-        // Currently dragged token
-        let draggedToken = null;
-        let offsetX = 0;
-        let offsetY = 0;
         
         // Page content
         const pages = {
@@ -591,10 +501,6 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         
         // Display a page
         function displayPage(pageNum) {
-            // Hide battle container if showing
-            document.getElementById('BattleContainer').style.display = 'none';
-            document.getElementById('TextBox').style.display = 'block';
-            
             if (pages[pageNum]) {
                 let pageContent = pages[pageNum].content;
                 
@@ -605,211 +511,6 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 document.getElementById('TextBox').innerHTML = formatText(pageContent);
                 currentPage = pageNum;
             }
-        }
-
-        // Start a battle
-        function startBattle(battleName) {
-            const battle = battles[battleName];
-            if (!battle) return;
-        
-            // Hide text box and show battle container
-            document.getElementById('TextBox').style.display = 'none';
-            const battleContainer = document.getElementById('BattleContainer');
-            battleContainer.style.display = 'block';
-        
-            // Set CSS variables for grid size
-            battleContainer.style.setProperty('--cols', battle.width);
-            battleContainer.style.setProperty('--rows', battle.height);
-        
-            // Handle battle image with error management
-            const battleImage = document.getElementById('BattleImage');
-            battleImage.onerror = function() {
-                this.style.display = 'none';
-                console.warn("Battle image failed to load:", battle.image);
-                document.getElementById('BattleGrid').style.backgroundColor = '#333';
-            };
-            battleImage.src = battle.image;
-            battleImage.style.display = 'block';
-        
-            // Clear previous grid
-            const grid = document.getElementById('BattleGrid');
-            grid.innerHTML = '';
-            grid.style.backgroundColor = 'transparent';
-            
-            // Set up grid columns and rows with fixed sizing
-            grid.style.gridTemplateColumns = `repeat(${battle.width}, 60px)`;
-            grid.style.gridTemplateRows = `repeat(${battle.height}, 60px)`;
-            grid.style.gap = '2px';
-        
-            // Create grid cells and labels
-            for (let row = 0; row < battle.height; row++) {
-                for (let col = 0; col < battle.width; col++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'grid-cell';
-                    cell.dataset.col = col;
-                    cell.dataset.row = row;
-                    
-                    // Add column labels (letters) to first row
-                    if (row === 0) {
-                        const label = document.createElement('div');
-                        label.className = 'grid-label column-label';
-                        label.textContent = String.fromCharCode(65 + col); // A, B, C, etc.
-                        cell.appendChild(label);
-                    }
-                    
-                    // Add row labels (numbers) to first column
-                    if (col === 0) {
-                        const label = document.createElement('div');
-                        label.className = 'grid-label row-label';
-                        label.textContent = (row + 1).toString();
-                        cell.appendChild(label);
-                    }
-                    
-                    grid.appendChild(cell);
-                }
-            }
-        
-            // Place enemy tokens
-            battle.enemyTokens.forEach(pos => {
-                placeToken(pos, 'enemy-token');
-            });
-        
-            // Place ally tokens
-            battle.allyTokens.forEach(pos => {
-                placeToken(pos, 'ally-token');
-            });
-        
-            // Set up drag and drop for tokens
-            setupTokenDrag();
-        
-            // Add a continue button to exit battle
-            const continueButton = document.createElement('button');
-            continueButton.textContent = 'Continue';
-            continueButton.style.position = 'absolute';
-            continueButton.style.bottom = '20px';
-            continueButton.style.right = '20px';
-            continueButton.style.padding = '10px 20px';
-            continueButton.style.backgroundColor = '#444';
-            continueButton.style.color = '#eee';
-            continueButton.style.border = '1px solid #555';
-            continueButton.style.borderRadius = '5px';
-            continueButton.style.cursor = 'pointer';
-            continueButton.addEventListener('click', function() {
-                battleContainer.style.display = 'none';
-                document.getElementById('TextBox').style.display = 'block';
-                this.remove(); // Remove the button after use
-            });
-            battleContainer.appendChild(continueButton);
-        }
-
-        // Place a token at a specific grid position
-        function placeToken(position, tokenClass) {
-            // Parse position (e.g., "A1" -> col 0, row 0)
-            const col = position.charCodeAt(0) - 65; // A -> 0, B -> 1, etc.
-            const row = parseInt(position.substring(1)) - 1; // 1 -> 0, 2 -> 1, etc.
-            
-            const grid = document.getElementById('BattleGrid');
-            const cells = grid.querySelectorAll('.grid-cell');
-            
-            // Find the cell at this position
-            let targetCell = null;
-            cells.forEach(cell => {
-                if (parseInt(cell.dataset.row) === row && parseInt(cell.dataset.col) === col) {
-                    targetCell = cell;
-                }
-            });
-            
-            if (targetCell) {
-                const token = document.createElement('div');
-                token.className = `token ${tokenClass}`;
-                token.dataset.col = col;
-                token.dataset.row = row;
-                targetCell.appendChild(token);
-            }
-        }
-
-        // Set up drag and drop for tokens
-        function setupTokenDrag() {
-            const tokens = document.querySelectorAll('.token');
-            
-            tokens.forEach(token => {
-                token.addEventListener('mousedown', function(e) {
-                    draggedToken = this;
-                    
-                    // Calculate offset from mouse to token position
-                    const rect = this.getBoundingClientRect();
-                    offsetX = e.clientX - rect.left;
-                    offsetY = e.clientY - rect.top;
-                    
-                    // Make token appear above others while dragging
-                    this.style.zIndex = '100';
-                    this.style.transform = 'scale(1.1)';
-                    
-                    // Prevent text selection during drag
-                    e.preventDefault();
-                });
-            });
-            
-            document.addEventListener('mousemove', function(e) {
-                if (draggedToken) {
-                    // Move token with mouse
-                    draggedToken.style.position = 'fixed';
-                    draggedToken.style.left = (e.clientX - offsetX) + 'px';
-                    draggedToken.style.top = (e.clientY - offsetY) + 'px';
-                }
-            });
-            
-            document.addEventListener('mouseup', function() {
-                if (draggedToken) {
-                    // Find the closest grid cell
-                    const tokenRect = draggedToken.getBoundingClientRect();
-                    const tokenCenterX = tokenRect.left + tokenRect.width / 2;
-                    const tokenCenterY = tokenRect.top + tokenRect.height / 2;
-                    
-                    let closestCell = null;
-                    let minDistance = Infinity;
-                    
-                    const cells = document.querySelectorAll('.grid-cell');
-                    cells.forEach(cell => {
-                        const cellRect = cell.getBoundingClientRect();
-                        const cellCenterX = cellRect.left + cellRect.width / 2;
-                        const cellCenterY = cellRect.top + cellRect.height / 2;
-                        
-                        const distance = Math.sqrt(
-                            Math.pow(tokenCenterX - cellCenterX, 2) + 
-                            Math.pow(tokenCenterY - cellCenterY, 2)
-                        );
-                        
-                        if (distance < minDistance) {
-                            minDistance = distance;
-                            closestCell = cell;
-                        }
-                    });
-                    
-                    // Snap token to closest cell
-                    if (closestCell) {
-                        // Remove from old parent
-                        draggedToken.parentNode.removeChild(draggedToken);
-                        
-                        // Add to new cell
-                        closestCell.appendChild(draggedToken);
-                        
-                        // Update position data
-                        draggedToken.dataset.col = closestCell.dataset.col;
-                        draggedToken.dataset.row = closestCell.dataset.row;
-                        
-                        // Reset styles
-                        draggedToken.style.position = 'absolute';
-                        draggedToken.style.left = '10%';
-                        draggedToken.style.top = '10%';
-                    }
-                    
-                    // Reset token styles
-                    draggedToken.style.zIndex = '10';
-                    draggedToken.style.transform = 'scale(1)';
-                    draggedToken = null;
-                }
-            });
         }
         
         function handleInput() {
@@ -827,13 +528,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Check if input matches any option for current page
             if (pages[currentPage].options[input]) {
                 const nextPage = pages[currentPage].options[input];
-                
-                // Check if this is a battle command
-                if (nextPage in battles) {
-                    startBattle(nextPage);
-                } else {
-                    displayPage(nextPage);
-                }
+                displayPage(nextPage);
                 
                 // Optional: Add TP modifications for specific choices
                 if (input === 'run') tp -= 2; // Example penalty
