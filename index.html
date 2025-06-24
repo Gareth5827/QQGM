@@ -84,11 +84,12 @@
             color: #eee;
         }
 
-        /* Battle system styles */
         <div id="BattleContainer" style="display: none;">
+            <img id="BattleImage" src="" alt="Battle Background" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; z-index: -1;">
             <div id="BattleGrid"></div>
             <div id="BattleControls">
-                <button class="battle-button" id="FleeButton">Flee Battle</button>
+                <button class="battle-button" id="EndTurnButton">End Turn</button>
+                <button class="battle-button" id="FleeButton">Flee</button>
             </div>
         </div>
         
@@ -101,17 +102,16 @@
         
         #BattleGrid {
             position: relative;
-            margin: 30px 0 0 30px;
-            background-color: #333;
-            border: 1px solid #555;
+            background-color: rgba(0,0,0,0.5);
+            overflow: hidden;
         }
         
         .grid-cell {
             width: 60px;
             height: 60px;
-            border: 1px solid rgba(255,255,255,0.1);
-            position: relative;
-            float: left;
+            border: 1px solid rgba(255,255,255,0.2);
+            position: absolute;
+            box-sizing: border-box;
         }
         
         .token {
@@ -121,12 +121,19 @@
             position: absolute;
             top: 5px;
             left: 5px;
-            cursor: pointer;
+            cursor: move;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            z-index: 2;
         }
         
         .token:hover {
             transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
         
         .player-token {
@@ -558,15 +565,15 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         };
 
         const battles = {
-            Battle1: { // Note lowercase to match the replacement
+            Battle1: {
                 image: "Battle1.png",
                 width: 6,
                 height: 6,
-                enemies: ["A1", "B2", "A3", "B4", "A5", "B6"],
-                players: ["F1", "E2", "F3", "E4", "F5", "E6"]
+                enemies: ["A1", "B2", "C3"],
+                players: ["F1", "E2", "D3"]
             },
-            battle2: {
-                image: "battle2.png",
+            Battle2: {
+                image: "Battle2.png",
                 width: 8,
                 height: 8,
                 enemies: ["A1", "B2", "C3", "D4"],
@@ -668,20 +675,60 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             spawnTokens();
         }
 
-                function createBattleGrid() {
+        function createBattleGrid() {
             const grid = document.getElementById('BattleGrid');
-            grid.innerHTML = ''; // Clear any existing grid
+            grid.innerHTML = '';
             
-            // Set grid dimensions based on battle config
-            grid.style.width = `${currentBattle.width * 60}px`;
-            grid.style.height = `${currentBattle.height * 60}px`;
+            // Set the battle background image
+            const battleImage = document.getElementById('BattleImage');
+            battleImage.src = currentBattle.image;
+            
+            // Create coordinate labels container
+            const labelsContainer = document.createElement('div');
+            labelsContainer.style.position = 'absolute';
+            labelsContainer.style.top = '0';
+            labelsContainer.style.left = '0';
+            labelsContainer.style.width = '100%';
+            labelsContainer.style.height = '100%';
+            labelsContainer.style.pointerEvents = 'none'; // Allow clicks to pass through
+            
+            // Create column labels (A, B, C...)
+            for (let x = 0; x < currentBattle.width; x++) {
+                const colLabel = document.createElement('div');
+                colLabel.textContent = String.fromCharCode(65 + x);
+                colLabel.style.position = 'absolute';
+                colLabel.style.top = '0';
+                colLabel.style.left = `${(x * 60) + 30}px`;
+                colLabel.style.width = '60px';
+                colLabel.style.textAlign = 'center';
+                colLabel.style.color = '#fff';
+                labelsContainer.appendChild(colLabel);
+            }
+            
+            // Create row labels (1, 2, 3...)
+            for (let y = 0; y < currentBattle.height; y++) {
+                const rowLabel = document.createElement('div');
+                rowLabel.textContent = (y + 1).toString();
+                rowLabel.style.position = 'absolute';
+                rowLabel.style.top = `${(y * 60) + 30}px`;
+                rowLabel.style.left = '0';
+                rowLabel.style.width = '30px';
+                rowLabel.style.textAlign = 'center';
+                rowLabel.style.color = '#fff';
+                labelsContainer.appendChild(rowLabel);
+            }
+            
+            grid.appendChild(labelsContainer);
             
             // Create grid cells
-            for (let y = 1; y <= currentBattle.height; y++) {
-                for (let x = 1; x <= currentBattle.width; x++) {
+            for (let y = 0; y < currentBattle.height; y++) {
+                for (let x = 0; x < currentBattle.width; x++) {
                     const cell = document.createElement('div');
                     cell.className = 'grid-cell';
-                    cell.dataset.coord = `${String.fromCharCode(64 + x)}${y}`; // A1, B2, etc.
+                    cell.dataset.coord = `${String.fromCharCode(65 + x)}${y + 1}`;
+                    cell.style.position = 'absolute';
+                    cell.style.left = `${x * 60}px`;
+                    cell.style.top = `${y * 60}px`;
                     grid.appendChild(cell);
                 }
             }
@@ -770,15 +817,18 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         
         function createToken(coord, type, id) {
             const cell = document.querySelector(`[data-coord="${coord}"]`);
-            if (!cell) return;
+            if (!cell) {
+                console.error(`Cell not found: ${coord}`);
+                return;
+            }
             
             const token = document.createElement('div');
             token.className = `token ${type}-token`;
             token.dataset.type = type;
             token.dataset.id = id;
             token.dataset.coord = coord;
+            token.textContent = type === 'player' ? 'P' + (id + 1) : 'E' + (id + 1);
             
-            // Make token draggable
             token.draggable = true;
             token.addEventListener('dragstart', handleDragStart);
             
@@ -799,8 +849,22 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         function setupDropZones() {
             const cells = document.querySelectorAll('.grid-cell');
             cells.forEach(cell => {
-                cell.addEventListener('dragover', handleDragOver);
-                cell.addEventListener('drop', handleDrop);
+                cell.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                });
+                
+                cell.addEventListener('dragleave', function() {
+                    this.style.backgroundColor = '';
+                });
+                
+                cell.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.backgroundColor = '';
+                    if (selectedToken) {
+                        moveToken(selectedToken, this.dataset.coord);
+                    }
+                });
             });
         }
         
