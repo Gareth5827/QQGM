@@ -84,10 +84,8 @@
             color: #eee;
         }
 
-        <div id="BattleContainer" style="display: none;">
-            <div id="BattleImageContainer" style="position: absolute; width: 100%; height: 100%; z-index: -1;">
-                <!-- Image will be inserted here -->
-            </div>
+        <div id="BattleContainer">
+            <div id="BattleImageContainer"></div> <!-- Uncommented and properly placed -->
             <div id="BattleGrid"></div>
             <div id="BattleControls">
                 <button class="battle-button" id="EndTurnButton">End Turn</button>
@@ -668,13 +666,29 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         }
 
         function startBattle(battleId) {
+            // Debug log
             console.log(`Starting battle: ${battleId}`);
+            
+            // Check if battle container exists
+            const battleContainer = document.getElementById('BattleContainer');
+            if (!battleContainer) {
+                console.error('BattleContainer element not found');
+                return;
+            }
+
+            if (!createBattleGrid()) {
+            console.error('Failed to create battle grid - ending battle');
+            endBattle(currentPage);
+            return;
+            }
+            
             // Hide text elements
-            document.getElementById('TextBox').style.display = 'none';
-            document.getElementById('InputField').style.display = 'none';
+            const textBox = document.getElementById('TextBox');
+            const inputField = document.getElementById('InputField');
+            if (textBox) textBox.style.display = 'none';
+            if (inputField) inputField.style.display = 'none';
             
             // Show battle container
-            const battleContainer = document.getElementById('BattleContainer');
             battleContainer.style.display = 'block';
             battleContainer.classList.add('active');
             
@@ -707,37 +721,63 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         }
         
         function createBattleGrid() {
+            // 1. First check if grid exists
             const grid = document.getElementById('BattleGrid');
-            grid.innerHTML = '';
-            
-            // Set the battle background image
-            const imageContainer = document.getElementById('BattleImageContainer');
-            imageContainer.innerHTML = ''; // Clear previous image
-            if (currentBattle.image) {
-                const img = document.createElement('img');
-                img.src = currentBattle.image;
-                img.onerror = function() {
-                    this.style.display = 'none'; // Hide if image fails to load
-                };
-                img.alt = "Battle Background";
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-                img.style.opacity = '0.3';
-                imageContainer.appendChild(img);
+            if (!grid) {
+                console.error('BattleGrid element not found in DOM');
+                return false; // Return false to indicate failure
             }
             
-            // Create coordinate labels container
+            // Clear the grid safely
+            try {
+                grid.innerHTML = '';
+            } catch (e) {
+                console.error('Failed to clear BattleGrid:', e);
+                return false;
+            }
+        
+            // 2. Handle the image container (make it optional)
+            let imageContainer = null;
+            try {
+                imageContainer = document.getElementById('BattleImageContainer');
+                if (imageContainer && currentBattle.image) {
+                    imageContainer.innerHTML = ''; // Clear previous image
+                    
+                    const img = document.createElement('img');
+                    img.src = currentBattle.image;
+                    img.alt = "Battle Background";
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.opacity = '0.3';
+                    
+                    // Error handling for image loading
+                    img.onerror = function() {
+                        console.warn('Failed to load battle image:', currentBattle.image);
+                        this.style.display = 'none';
+                    };
+                    
+                    imageContainer.appendChild(img);
+                }
+            } catch (e) {
+                console.warn('Error handling battle image:', e);
+            }
+        
+            // 3. Create coordinate system
             const labelsContainer = document.createElement('div');
             labelsContainer.style.position = 'absolute';
             labelsContainer.style.top = '0';
             labelsContainer.style.left = '0';
             labelsContainer.style.width = '100%';
             labelsContainer.style.height = '100%';
-            labelsContainer.style.pointerEvents = 'none'; // Allow clicks to pass through
-            
+            labelsContainer.style.pointerEvents = 'none';
+        
+            // Validate battle dimensions
+            const width = currentBattle.width || 6; // Default fallback
+            const height = currentBattle.height || 6; // Default fallback
+        
             // Create column labels (A, B, C...)
-            for (let x = 0; x < currentBattle.width; x++) {
+            for (let x = 0; x < width; x++) {
                 const colLabel = document.createElement('div');
                 colLabel.textContent = String.fromCharCode(65 + x);
                 colLabel.style.position = 'absolute';
@@ -748,9 +788,9 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 colLabel.style.color = '#fff';
                 labelsContainer.appendChild(colLabel);
             }
-            
+        
             // Create row labels (1, 2, 3...)
-            for (let y = 0; y < currentBattle.height; y++) {
+            for (let y = 0; y < height; y++) {
                 const rowLabel = document.createElement('div');
                 rowLabel.textContent = (y + 1).toString();
                 rowLabel.style.position = 'absolute';
@@ -761,21 +801,28 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 rowLabel.style.color = '#fff';
                 labelsContainer.appendChild(rowLabel);
             }
-            
+        
             grid.appendChild(labelsContainer);
-            
-            // Create grid cells
-            for (let y = 0; y < currentBattle.height; y++) {
-                for (let x = 0; x < currentBattle.width; x++) {
+        
+            // Create grid cells with bounds checking
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
                     const cell = document.createElement('div');
                     cell.className = 'grid-cell';
                     cell.dataset.coord = `${String.fromCharCode(65 + x)}${y + 1}`;
                     cell.style.position = 'absolute';
                     cell.style.left = `${x * 60}px`;
                     cell.style.top = `${y * 60}px`;
+                    
+                    // Make cells droppable for tokens
+                    cell.addEventListener('dragover', handleDragOver);
+                    cell.addEventListener('drop', handleDrop);
+                    
                     grid.appendChild(cell);
                 }
             }
+        
+            return true; // Return true to indicate success
         }
         
         // Modify fleeBattle to accept a return page
