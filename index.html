@@ -96,13 +96,12 @@
             width: 80%;
             margin: 20px auto;
             position: relative;
+            display: none; /* This should be here, not inline */
         }
         
         #BattleGrid {
             position: relative;
             margin: 30px 0 0 30px;
-            width: 100%;
-            height: 500px; /* Adjust as needed */
             background-color: #333;
             border: 1px solid #555;
         }
@@ -176,14 +175,13 @@
     <div id="TextBox"></div>
     <input type="text" id="InputField" placeholder="Type your response here...">
     
-    <!-- Add Battle Container -->
-<div id="BattleContainer" style="display: none;">
-    <div id="BattleGrid"></div>
-    <div id="BattleControls">
-        <button class="battle-button" id="EndTurnButton">End Turn</button>
-        <button class="battle-button" id="FleeButton">Flee</button>
+    <div id="BattleContainer">
+        <div id="BattleGrid"></div>
+        <div id="BattleControls">
+            <button class="battle-button" id="EndTurnButton">End Turn</button>
+            <button class="battle-button" id="FleeButton">Flee</button>
+        </div>
     </div>
-</div>
     
     <script>
         // Game state
@@ -669,6 +667,25 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Spawn tokens
             spawnTokens();
         }
+
+                function createBattleGrid() {
+            const grid = document.getElementById('BattleGrid');
+            grid.innerHTML = ''; // Clear any existing grid
+            
+            // Set grid dimensions based on battle config
+            grid.style.width = `${currentBattle.width * 60}px`;
+            grid.style.height = `${currentBattle.height * 60}px`;
+            
+            // Create grid cells
+            for (let y = 1; y <= currentBattle.height; y++) {
+                for (let x = 1; x <= currentBattle.width; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.dataset.coord = `${String.fromCharCode(64 + x)}${y}`; // A1, B2, etc.
+                    grid.appendChild(cell);
+                }
+            }
+        }
         
         function endBattle(returnPage) {
             // Hide battle container
@@ -709,6 +726,12 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Initialize battle system
             document.getElementById('FleeButton').addEventListener('click', fleeBattle);
             setupDropZones();
+
+            document.getElementById('EndTurnButton').addEventListener('click', function() {
+                // Toggle turn
+                battleState.playerTurn = !battleState.playerTurn;
+                alert(battleState.playerTurn ? "Player's turn" : "Enemy's turn");
+            });
             
             // Set up input event listener
             document.getElementById('InputField').addEventListener('keypress', function(e) {
