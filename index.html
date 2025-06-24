@@ -114,67 +114,78 @@
         
         // Page content
         const pages = {
-            1: `Welcome to the Manufactured World.
+            1: {
+        content: `Welcome to the Manufactured World.
 You were born into a life already planned, you are a cog in a machine too massive and protected to stop. Towering above the dead Earth are the Manufactured Towns, massive hunks of metal and concrete grids suspended in the sky, each one feels less like a town and more of an inescapable prison. The rich live above these towns in lavish fortresses you'll never get inside of. As you've been told since birth, you are there to serve the rich and nothing else. Everyone is assigned a job by the (TaskMaster), a glowing slab embedded in everyone's living quarters. You are expected to wait inside until the TaskMaster tells you what to do. [You cannot say no to the TaskMaster, unless you want the rich to dispose of you.] Inside of everyone's houses is a gas valve, when activated it sprays a deadly neurotoxin that kills whoever inhales it in seconds. It even rots living matter, so cleanup of defectors is easier. Refusing to do the assigned job, being late to the job, or failing the assigned job will make you a defector. The TaskMaster will lock your door, fill the room with gas, and the city forgets you. Before and after each job you have free time, but you know that these cold curated hours are nothing more than an illusion of freedom.
 
 The job you have been given for the past few years of your lives is a Hunter. One of the most dangerous jobs in the system. While everyone else washes buildings, ensures programs are working correctly, or makes music to entertain the rich, your job is to descend onto the shattered remnants of the world you live on, referred to as (The Below), and retrieve whatever the TaskMaster tells you. The Below is plagued with rabid evolution and unnatural creations. The rich have played god for many years, conducting experiments without ethics, logic, or restraint. While ecosystems have mutated so much they are almost indistinguishable from what they used to be a year ago. Despite the massive danger, this is the only place where the machine can't watch or monitor you, this hostile wasteland is the only place you can breathe and see the humongous mansions the rich have built.
 
 You've been born into a hostile world where stepping out of line is the difference between life and death. [There's no second chances, no saying no.] Don't come back empty handed.
 
-Type "continue" to continue.`
+Type "continue" to continue.`,
         options: {
             "next": 2,
             "continue": 2,
             "fight": "Battle1"
         }
-            2: "As you reminisce of what the world around you is like and what your life has been like, you wake up from your “dream” with the same stale tone you’ve woken up to for many years prior. The TaskMaster awakes, turning on the stale florescent lighting in your living quarters. The small greyscale plastic and metal room lights up and you jump to your feet, getting in front the TaskMaster as soon as you can. You know what would happen if you didn’t.
+    },
+        
+            2: {
+                Content: `As you reminisce of what the world around you is like and what your life has been like, you wake up from your “dream” with the same stale tone you’ve woken up to for many years prior. The TaskMaster awakes, turning on the stale florescent lighting in your living quarters. The small greyscale plastic and metal room lights up and you jump to your feet, getting in front the TaskMaster as soon as you can. You know what would happen if you didn’t.
 
-The TaskMasters screen is blank for a few moments, but after some silence, your job is displayed.
-Objective(s): Descend into the wildgrass region, eliminate toxin beetle infestation
-Target(s): Elder toxin beetles
-Condition(s): Do not kill any egg sacks or larvae
-
-The text lingers for a few moments before disappearing all at once. It plays a soft and hollow jingle before displaying a large 3 hour timer. It begins ticking down and your mounted map of the city highlights the drop point you need to get to before break time is over.
-
-The TaskMaster says “Compliance window is now active. Please optimize your systems. Rest, hydrate, and refuel.” and the room returns to stillness. PLAYERS HAVE 5 TP! If they do not reach the drop point when TP hits 0, they will be killed.
-    Enter "continue" to continue."
-            options:{
-                "look around": 3,
-                "continue": 4
-        }
-            3: "Looking around the room: You peer around your room, looking at the little belongings you have.
-
-Behind you are the sterile plastic bunk beds with leather straps.
-In front of you is the TaskMaster terminal.
-To the left is your pulsing city map. (drop point is pulsing)
-And to the right are your lockers and utility bins. This is as close to a room as you get, each locker can only hold a couple small items, and in front of the lockers is your bin of work gear.
-    
-        Enter "continue" to continue."
-            options:{
+                The TaskMasters screen is blank for a few moments, but after some silence, your job is displayed.
+                Objective(s): Descend into the wildgrass region, eliminate toxin beetle infestation
+                Target(s): Elder toxin beetles
+                Condition(s): Do not kill any egg sacks or larvae
+                
+                The text lingers for a few moments before disappearing all at once. It plays a soft and hollow jingle before displaying a large 3 hour timer. It begins ticking down and your mounted map of the city highlights the drop point you need to get to before break time is over.
+                
+                The TaskMaster says “Compliance window is now active. Please optimize your systems. Rest, hydrate, and refuel.” and the room returns to stillness. PLAYERS HAVE 5 TP! If they do not reach the drop point when TP hits 0, they will be killed.
+                    Enter "continue" to continue.`,
+                            options:{
+                                "look around": 3,
+                                "continue": 4
+                        }
+        },
+            
+        3: {
+            content: `Looking around the room: You peer around your room, looking at the little belongings you have.
+        
+        Behind you are the sterile plastic bunk beds with leather straps.
+        In front of you is the TaskMaster terminal.
+        To the left is your pulsing city map. (drop point is pulsing)
+        And to the right are your lockers and utility bins. This is as close to a room as you get, each locker can only hold a couple small items, and in front of the lockers is your bin of work gear.
+            
+        Enter "continue" to continue.`,
+            options: {
                 "next": 4,
                 "continue": 4
             }
+        },
 
-            4: "Players have a choice:
-Head to public feeding areas (eat and grab food before leaving) -2 TP {heals party and gives consumables}
-Head to equipment store (can buy stuff - has a freebie single use item) -1 TP
-Head to music store (can listen to AI music, grants a buff on your next adventure) -1 TP
-Isolation meditation cells (recommended psychological maintenance) {can upgrade an ability you have for -1 TP for +1, -2 for +2, etc}
-Advanced teaching centres (can pay for courses to learn new skills and passives, roll 1D6 to see what’s available in each slot (7 total slots), each one has a TP cost assigned to it)
+            4: {
+                content: `Players have a choice:
+            Head to public feeding areas (eat and grab food before leaving) -2 TP {heals party and gives consumables}
+            Head to equipment store (can buy stuff - has a freebie single use item) -1 TP
+            Head to music store (can listen to AI music, grants a buff on your next adventure) -1 TP
+            Isolation meditation cells (recommended psychological maintenance) {can upgrade an ability you have for -1 TP for +1, -2 for +2, etc}
+            Advanced teaching centres (can pay for courses to learn new skills and passives, roll 1D6 to see what's available in each slot (7 total slots), each one has a TP cost assigned to it)
+            
+            As you leave your living quarters, the clock ticks down. You have a very small amount of freedom, but freedom nontheless.
+            You can head to the public feeding areas to get food for your day, the equipment store for items, the music store for buffs, the teaching centre for new abilities, and the meditation pods for ability upgrades.
+            Enter "feeding" to go to the feeding areas, "equipment" to go to the equipment store, "music" to go to the music store, "cells" for the meditation cells, "teaching" for the teaching centre, or "drop" for the drop point.`,
+                options: {
+                    "feeding": 5,
+                    "equipment": 6,
+                    "music": 7,
+                    "cells": 8,
+                    "teaching": 9,
+                    "drop": 10
+                }
+            },
 
-As you leave your living quarters, the clock ticks down. You have a very small amount of freedom, but freedom nontheless.
-You can head to the public feeding areas to get food for your day, the equipment store for items, the music store for buffs, the teaching centre for new abilities, and the meditation pods for ability upgrades.
-        Enter "feeding" to go to the feeding areas, "equipment" to go to the equipment store, "music" to go to the music store, "cells" for the meditation cells, "teaching" for the teaching centre, or "drop" for the drop point."
-            Options:{
-                "feeding": 5,
-                "equipment": 6,
-                "music": 7,
-                "cells": 8,
-                "teaching": 9,
-                "drop": 10
-            }
-
-            5: "Public feeding areas:
+            5: {
+                content: `Public feeding areas:
 You head over to the public feeding areas, following the streams of people doing the exact same thing. The only thing you can hear is a symphony of synchronized footsteps and the occasional sniff. A voice comes over the PA system on the street “Optimal nourishment window now open. Dining Venue 13 is almost full, members of Blocks R through Z proceed to Dining Venue 14. Remember, nutrition is privilege.”
 
 As you’re walking along with the crowd of people, you see a wide metallic arch looming over you, and that can only mean one thing. Dining Venue 13. You head through the arch and enter the revolving doors. As you move around the large circular area, the door suddenly stops. After a moment of silence a BEEP is heard and a green light turns on. The door continues to move, letting you into the uninspiring and bland Dining Venue 13.
@@ -198,13 +209,14 @@ As well as an identical supply of food and nutrition capsules for your journey. 
 6- (pill box 6) B-Mine pill x2, Unil pill x2
 7- (pill box 7) VB pill x2, B-Mine pill x2
 8- (pill box 8) VB pill x3, Unil pill x1
-
-        Enter "continue" to continue."
-            Options:{
+                
+        Enter "continue" to continue.`,
+            options:{
                 "continue": 4
             }
+            },
 
-            6: "Equipment store: You make your way over to Block 12, Equipment Support & Disposal. -1 TP
+            6: {content: `Equipment store: You make your way over to Block 12, Equipment Support & Disposal. -1 TP
 
 Upon opening the doors, the smell of rust, burnt rubber, and sanitizer assaults your nose. The only thing making noise are the fluorescent lights buzzing. As you stroll through the isles looking at all the different tools that are available, you see the front desk. A lanky man with a white bearded tucked into his collar. He looks at you with a blank expression, then says “Nothing is for sale right now, the machine didn’t specify what needed to go. You can grab something from there though” pointing to a large machine with a scanner on the front.
 
@@ -233,12 +245,13 @@ Items: (all can only be used once)
 9: Smoke baton - Create Smoke within a 10 FT area around you [0 TP]
 10: Crawler bait [30 FT] - Target an empty space, the all insects in a 5 FT range make an INS save of 13+, any that fail are Shaken and look at the bait [0 TP]
         
-        Enter "continue" to continue."
+        Enter "continue" to continue.`,
             Options:{
                 "continue": 4
             }
+            },
 
-            7:" Music store: You head on over to Auralux, the music listening area.
+            7: {content: `Music store: You head on over to Auralux, the music listening area.
 
 You enter and the room is as interesting as the name. You see a large slogan that reads “We put the rhythm in algorhythm!” a board worker stars at a blank screen and welcomes you in. They say there’s only one pod available, and you’ll need to take turns 1 at a time.
 
@@ -254,12 +267,13 @@ Player rolls 1D6 to see which buff they get until the end of a job (or you can h
 4: WIT - Lofi beats: For every save you pass, gain +2 to Hit on [Spell]s until the end of combat
 5: INS - Mindful: If you cast 3 [Spell]s in a turn, gain 3 Mana
 6: ALL - Groovy: If a unit in a 15 FT range of you gains a Shield, roll 1D6 / 2 (rounded up). If ally, heal them for the value, if enemy, damage them for the value
-        Enter "continue" to continue."
-            Options:{
+Enter "continue" to continue.`,
+            options:{
                 "continue": 4
             }
+            },
 
-            8: "Learning centre: You arrive at the large grey cube called Facility C6. In here you can learn extra things the machine wants you to learn.
+            8: {content: `Learning centre: You arrive at the large grey cube called Facility C6. In here you can learn extra things the machine wants you to learn.
 
 As you step into the building, you see rows upon rows of pods that resemble sarcophagi filled with users learning with strange visors over their eyes. Some are learning about different skills they need for their jobs, others are learning about acceptable hobbies the machine is fond of, you however get access to a special set of courses because you’re a Hunter.
 
@@ -276,12 +290,13 @@ Nocturnal: +2 Advantage if you start combat in darkness or if no enemy can see y
 
 Upon finishing:
 You step out of the pod, wired from the visions and memories that have been implanted into your brain.
-        Enter "continue" to continue."
+        Enter "continue" to continue.`,
             Options:{
                 "continue": 4
             }
+               },
 
-            9: "Isolation meditation cells:
+            9: {content: `Isolation meditation cells:
 You approach building 3A. A large plastic and metal building that resembles a rounded cube rather than an actual building. Inside is extremely quiet, the only thing you can hear in the large space is your feet against the floor and the synchronized breaths of your party. The walls, floor, and ceiling are padded in a strange puffy white and grey material, putting a slight spring in your step.
 
 Beyond a vacant front desk are rows and rows of thin pitch black rectangles. Each one is just barely big enough for a person to stand inside of.
@@ -292,12 +307,13 @@ Getting an ability +1 costs 1 TP
 Getting an ability +2 costs 2 TP
 Getting an ability +3 costs 3 TP
 Etc
-        Enter "continue" to continue."
+        Enter "continue" to continue.`,
             Options:{
                 "continue": 4
             }
+               },
 
-            10: "On reaching the drop point:
+            10: {content: `On reaching the drop point:
 You make your way towards the southeast drop point. A large plastic and metal gate obscures the small building behind it. Upon reaching the gate, a biometric scanner pops out and says “Scanning for entry into CHUTE 7G is required. Please remain still to continue.”
 
 After remaining still for a couple seconds, the machine begins scanning you. It says “Hunters 14, 52, 60, 78 (other numbers if needed), identities valid. Continue” The gate opens like the doors on a cargo truck and you see the inside of the drop point. A large field like area with a tiny white building in the middle. The inside of the tiny building is a large clear tube with multiple oblong pods lined up on different tracks, all of which lead inside the tube. The terminal instructs you to say a parting phrase before stepping into your assigned pods (get players to say a phrase).
@@ -309,12 +325,13 @@ You all land one after another on the ground. Ejected from the tube like junk ma
 
 Areas players can see:
 Ritual ground (remnants of past hunters) - leads to other underground dirt tunnels
-        Enter "continue" to continue."
+        Enter "continue" to continue.`,
             Options:{
                 "continue": 11
             }
+        },
 
-            11: "Pushing through the chest high grass and shin high mushrooms, you come across what looks to be a burial site with a large black tree in the background. Poorly carved stones line a large messy grid with the names of previous hunters etched into them. Leather sacks, coats, boots, and other torn articles of clothing are strewn around the burial site and the smell of ash is overpowering. In the middle of the messy grid of graves is what remains of a large bonfire.
+            11: {content: `Pushing through the chest high grass and shin high mushrooms, you come across what looks to be a burial site with a large black tree in the background. Poorly carved stones line a large messy grid with the names of previous hunters etched into them. Leather sacks, coats, boots, and other torn articles of clothing are strewn around the burial site and the smell of ash is overpowering. In the middle of the messy grid of graves is what remains of a large bonfire.
 
 You can either get your job done or poke around.
 
@@ -328,12 +345,13 @@ If a player wants to loot a grave, they roll 1D6: (players can investigate up to
 1 - 3: Three maggots burst from the corpse and leap into action, splatting on the ground and squirming towards you!
 4 - 5: Nothing but the strong stench of rotting flesh and developing fungi come up from the grave...
 6: While the remains of a long dead hunter and spider are unnerving, you find a utility belt! Roll 1D10 to see what item you get!
-        Enter "continue" to continue toward the base of the ashy tree in front of them."
+        Enter "continue" to continue toward the base of the ashy tree in front of them.`,
             Options:{
                 "continue": 12
             }
+                },
 
-            12: "As you make your way towards the dirt tunnels, you see the black tree, it’s trunk rising from the ground like a monument. The dark is eerily black and ashy, its roots bring up from the ground in large coils, allowing you to sit down or take shelter. The roots have claw marks, bite marks, and smell of decay. A strange silence hangs in the air, no shrieking insects, no buzzing of wings, just the wind blowing through the ancient bark.
+            12: {content: `As you make your way towards the dirt tunnels, you see the black tree, it’s trunk rising from the ground like a monument. The dark is eerily black and ashy, its roots bring up from the ground in large coils, allowing you to sit down or take shelter. The roots have claw marks, bite marks, and smell of decay. A strange silence hangs in the air, no shrieking insects, no buzzing of wings, just the wind blowing through the ancient bark.
 
 If a player wants to sleep they can recover 1D4 health (once per player)
 
@@ -347,13 +365,14 @@ The marsh is a horrid place filled with mud, insect carcasses, foul waters, and 
 
 If a player asks about the meadow:
 The meadow is an eerily peaceful place, filled with chest high grass, and extremely vibrant flowers that sway gently in the wind.
-        Enter "meadow" to go to the meadow, enter "marsh" to go to the marsh."
+        Enter "meadow" to go to the meadow, enter "marsh" to go to the marsh.`,
             Options:{
                 "meadow": 13,
                 "marsh": 15
             }
+                },
 
-            13: "Black root area:
+            13: {content: `Black root area:
 As you move through the grass, you notice the colour starting to fade to a grey and the blades seem to wilt. Before you know it, the vibrant hues have faded into a monochrome palette of disappointment. Ash black tree roots rise from the earth, coiling like giant stitches over a forgotten wound. The roots loop high, tall enough for a grown hunter to walk under, and cast long shadows in the daylight. The dirt beneath you is neglected, crunchy, and dry. The path forward is obscured with large black roots, you’ll need to find or fight your way out.
 
 A player can stand on top of a black root by making an AGI roll of 14+ (on fail they take 2 damage climbing up). From here they can kind of see over everything and have a better idea on which direction they should go. A player makes a Survival roll (+3 to that roll if they are on the black root) of 16+ to find the way out. If they don’t find the way out, then follow through with normal sequence. If they do, they advance to the forgotten hatchery.
@@ -369,12 +388,13 @@ Straight straight straight: As you move through the black roots, you decide to k
 Left straight right OR Right straight left: As you move through the black roots, it appears you took a wrong turn, and the beasts hiding in the black roots spring into action! Everyone roll for advantage! - Players fight 3 Spiders
 Anything else: Despite the confusing layout of the black roots, you manage to make it through unscathed! Going through a forgotten hatchery seems to be the only way forward now.
 
-    Enter "continue" to continue."
+    Enter "continue" to continue.`,
             Options:{
                 "continue": 14
             }
+                },
 
-            14: "Forgotten hatchery:
+            14: {content: `Forgotten hatchery:
 Moving closer to the abandoned building in front of you, a torn rusted metal fence surrounds the structure. Panels of broken glass line outside of the building, letting you see glimpses of the horrors inside. The large 3 foot thick entrance door is ajar. Upon entering the forsaken building, you come to realize it’s supposed to be a greenhouse, but everything inside is cold and damp.
 
 There are various large tables with shattered beakers and strewn papers, and worst of all, large cylindrical tubes with a sickly green liquid which houses large dark floating masses. The only thing breaking the silence is the occasional feint screech and flickering of alarm lights from a long dead power source.
@@ -395,12 +415,13 @@ If players are done and did NOT break any tubes, they leave the strange building
 
 As you leave the forgotten hatchery, you see a large dirt hole in the ground. It looks to be about 15 feet in diameter and clearly something non-human dug it. Regardless, you know for a fact your targets are down here and reluctantly move inside the dirt tunnels.
 
-        Enter "continue" to continue."
+        Enter "continue" to continue.`,
             Options:{
                 "continue": 18
             }
+                },
 
-            15: "Marsh
+            15: {content: `Marsh
 As you descend from the hill of the black tree, the forest thins out into a wide, sunken, and dreary expanse. Ahead lies a horrid smelling marshland, filled with a debris ridden foul green water, surrounded by mud that seems to pull you into itself and chest high reeds. Ahead of you are two options. If you want to reach the other side, you’ll need to go around the edge or head through the water.
 
 If players move around the edge: They are completely safe and roll 4 times (each player rolls at least once) (1 enemy automatically spawns)
@@ -413,12 +434,13 @@ They can swim across (roll 2 times) - at the end of each roll, everyone takes 1D
 They can try to grab enough reeds to make a raft (roll 4 Survival rolls of 12+, if all 4 are passed a raft is made and you can follow the [Terrain] case)
 
 At the end of all rolls: You finally reach the edge of the marshland, but you get the sneaking suspicion that you’re being watched. As you wade through the grass and reeds, you hear the buzzing of wings, everyone roll advantage ASAP! (spawn 1 enemy for every failed Survival roll when moving across the Marsh)
-        Enter "continue" to continue."
+        Enter "continue" to continue.`,
             Options:{
                 "continue": 16
             }
+                },
 
-            16: "Mushroom hole:
+            16: {content: `Mushroom hole:
 
 As you wade through the tall grass, you begin pushing past a dense curtain of vines and rot. The air starts to have a strange smell that singes your nostrils and almost makes you cough whenever you inhale. You enter a large crater filled with mushrooms and the remains of hunters who have long since died. You can visually see maggots climbing in and out of corpses and mushroom caps alike.
 
@@ -431,12 +453,13 @@ Going around the crater: You decide to head around the large crater, avoiding th
 Going inside the crater: As you and your party descend into the crater, the harsh sting of rot and fungal spores increases, almost choking you with each breath. As you reach the bottom of the crater, the mature maggots begin swarming over the corpses and begin to make a low pitched hissing. Everyone roll for Advantage ASAP!
 
 6 Maggots spawn, and on completion players get to roll for 3D10 single use items.
-        Enter "continue" to continue."
+        Enter "continue" to continue.`,
             Options:{
                 "continue": 17
             }
+                },
 
-            17: "Vine yard:
+            17: {content: `Vine yard:
 As you leave the fungal crater, the stench of wet spores leaves your throat and nostrils, however your surroundings are just as hostile and dreary. The world around you forms into a once lush, vine filled jungle. The air is thick and smells of ash and decay. Hundreds of dead and dying thorny vines litter the ground, and unfortunately, the only way toward you goal is through.
 
 Everyone must make three AGI saves asap!
@@ -444,10 +467,11 @@ Everyone must make three AGI saves asap!
 Every failed roll deals (1D6 / 2 (rounded up)) damage
 
 Upon making your way out of the vine filled wasteland, you see a huge dirt tunnel leading underground. It’s about 15 FT in diameter, and as far as you can tell, that’s where you need to go next.
-        Enter "continue" to continue."
+        Enter "continue" to continue.`,
             Options:{
                 "continue": 18
             }
+                },
         };
 
         const battles = {
