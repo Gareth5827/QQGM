@@ -195,14 +195,6 @@
     <div id="TextBox"></div>
     <input type="text" id="InputField" placeholder="Type your response here...">
     
-    <div id="BattleContainer">
-        <div id="BattleGrid"></div>
-        <div id="BattleControls">
-            <button class="battle-button" id="EndTurnButton">End Turn</button>
-            <button class="battle-button" id="FleeButton">Flee</button>
-        </div>
-    </div>
-    
     <script>
         // Game state
         let currentPage = 1;
@@ -668,42 +660,45 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         function startBattle(battleId) {
             console.log(`Starting battle: ${battleId}`);
             
-            // 1. Get battle container
-            const battleContainer = document.getElementById('BattleContainer');
-            if (!battleContainer) {
-                console.error('BattleContainer not found');
-                return;
-            }
-        
-            // 2. Hide text elements
-            const textBox = document.getElementById('TextBox');
-            const inputField = document.getElementById('InputField');
-            if (textBox) textBox.style.display = 'none';
-            if (inputField) inputField.style.display = 'none';
-        
-            // 3. Set current battle with validation
+            // Convert to lowercase to match our battles object
             const battleKey = battleId.toLowerCase();
+            
+            // Debug: log available battles
+            console.log('Available battles:', Object.keys(battles));
+            
             if (!battles[battleKey]) {
                 console.error(`Battle configuration not found: ${battleKey}`);
                 return;
             }
             
             currentBattle = battles[battleKey];
-            console.log('Current battle:', currentBattle);
-        
-            // 4. Initialize battle
+            console.log('Current battle config:', currentBattle);
+            
+            // Show battle container
+            const battleContainer = document.getElementById('BattleContainer');
+            if (!battleContainer) {
+                console.error('BattleContainer not found');
+                return;
+            }
+            battleContainer.style.display = 'block';
+            battleContainer.classList.add('active');
+            
+            // Hide text elements
+            document.getElementById('TextBox').style.display = 'none';
+            document.getElementById('InputField').style.display = 'none';
+            
+            // Initialize battle
             if (!createBattleGrid()) {
                 console.error('Failed to create battle grid');
                 return;
             }
-        
-            // 5. Show battle container
-            battleContainer.style.display = 'block';
-            battleContainer.classList.add('active');
-        
-            // 6. Spawn tokens and setup
+            
             spawnTokens();
             setupDropZones();
+            
+            // Debug: log grid and tokens
+            console.log('Grid cells:', document.querySelectorAll('.grid-cell').length);
+            console.log('Tokens created:', battleState.tokens.length);
         }
         
         function endBattle(returnPage) {
@@ -721,32 +716,25 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         }
         
         function createBattleGrid() {
-            // 1. First check if grid exists
             const grid = document.getElementById('BattleGrid');
             if (!grid) {
-                console.error('BattleGrid element not found in DOM');
+                console.error('BattleGrid element not found');
                 return false;
             }
-        
-            // 2. Validate currentBattle exists and has required properties
-            if (!currentBattle) {
-                console.error('currentBattle is null or undefined');
-                return false;
-            }
-        
-            // Set default battle dimensions if not provided
-            const width = currentBattle.width || 6; // Default 6 columns
-            const height = currentBattle.height || 6; // Default 6 rows
-        
-            try {
-                // Clear the grid
-                grid.innerHTML = '';
-        
-                // 3. Handle the image container (make it optional)
-                const imageContainer = document.getElementById('BattleImageContainer');
-                if (imageContainer && currentBattle.image) {
-                    imageContainer.innerHTML = '';
-                    
+            
+            // Clear the grid
+            grid.innerHTML = '';
+            
+            // Set grid dimensions based on battle size
+            const cellSize = 60;
+            grid.style.width = `${currentBattle.width * cellSize}px`;
+            grid.style.height = `${currentBattle.height * cellSize}px`;
+            
+            // Set the battle background image
+            const imageContainer = document.getElementById('BattleImageContainer');
+            if (imageContainer) {
+                imageContainer.innerHTML = '';
+                if (currentBattle.image) {
                     const img = document.createElement('img');
                     img.src = currentBattle.image;
                     img.alt = "Battle Background";
@@ -754,75 +742,63 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                     img.style.height = '100%';
                     img.style.objectFit = 'cover';
                     img.style.opacity = '0.3';
-                    
-                    img.onerror = function() {
-                        console.warn('Failed to load battle image:', currentBattle.image);
-                        this.style.display = 'none';
-                    };
-                    
                     imageContainer.appendChild(img);
                 }
-        
-                // 4. Create coordinate system
-                const labelsContainer = document.createElement('div');
-                labelsContainer.style.position = 'absolute';
-                labelsContainer.style.top = '0';
-                labelsContainer.style.left = '0';
-                labelsContainer.style.width = '100%';
-                labelsContainer.style.height = '100%';
-                labelsContainer.style.pointerEvents = 'none';
-        
-                // Create column labels (A, B, C...)
-                for (let x = 0; x < width; x++) {
-                    const colLabel = document.createElement('div');
-                    colLabel.textContent = String.fromCharCode(65 + x);
-                    colLabel.style.position = 'absolute';
-                    colLabel.style.top = '0';
-                    colLabel.style.left = `${(x * 60) + 30}px`;
-                    colLabel.style.width = '60px';
-                    colLabel.style.textAlign = 'center';
-                    colLabel.style.color = '#fff';
-                    labelsContainer.appendChild(colLabel);
-                }
-        
-                // Create row labels (1, 2, 3...)
-                for (let y = 0; y < height; y++) {
-                    const rowLabel = document.createElement('div');
-                    rowLabel.textContent = (y + 1).toString();
-                    rowLabel.style.position = 'absolute';
-                    rowLabel.style.top = `${(y * 60) + 30}px`;
-                    rowLabel.style.left = '0';
-                    rowLabel.style.width = '30px';
-                    rowLabel.style.textAlign = 'center';
-                    rowLabel.style.color = '#fff';
-                    labelsContainer.appendChild(rowLabel);
-                }
-        
-                grid.appendChild(labelsContainer);
-        
-                // Create grid cells
-                for (let y = 0; y < height; y++) {
-                    for (let x = 0; x < width; x++) {
-                        const cell = document.createElement('div');
-                        cell.className = 'grid-cell';
-                        cell.dataset.coord = `${String.fromCharCode(65 + x)}${y + 1}`;
-                        cell.style.position = 'absolute';
-                        cell.style.left = `${x * 60}px`;
-                        cell.style.top = `${y * 60}px`;
-                        
-                        // Setup drag and drop
-                        cell.addEventListener('dragover', handleDragOver);
-                        cell.addEventListener('drop', handleDrop);
-                        
-                        grid.appendChild(cell);
-                    }
-                }
-        
-                return true;
-            } catch (error) {
-                console.error('Error creating battle grid:', error);
-                return false;
             }
+            
+            // Create coordinate labels container
+            const labelsContainer = document.createElement('div');
+            labelsContainer.style.position = 'absolute';
+            labelsContainer.style.top = '0';
+            labelsContainer.style.left = '0';
+            labelsContainer.style.width = '100%';
+            labelsContainer.style.height = '100%';
+            labelsContainer.style.pointerEvents = 'none';
+            
+            // Create column labels (A, B, C...)
+            for (let x = 0; x < currentBattle.width; x++) {
+                const colLabel = document.createElement('div');
+                colLabel.textContent = String.fromCharCode(65 + x);
+                colLabel.style.position = 'absolute';
+                colLabel.style.top = '0';
+                colLabel.style.left = `${(x * cellSize) + 30}px`;
+                colLabel.style.width = `${cellSize}px`;
+                colLabel.style.textAlign = 'center';
+                colLabel.style.color = '#fff';
+                labelsContainer.appendChild(colLabel);
+            }
+            
+            // Create row labels (1, 2, 3...)
+            for (let y = 0; y < currentBattle.height; y++) {
+                const rowLabel = document.createElement('div');
+                rowLabel.textContent = (y + 1).toString();
+                rowLabel.style.position = 'absolute';
+                rowLabel.style.top = `${(y * cellSize) + 30}px`;
+                rowLabel.style.left = '0';
+                rowLabel.style.width = '30px';
+                rowLabel.style.textAlign = 'center';
+                rowLabel.style.color = '#fff';
+                labelsContainer.appendChild(rowLabel);
+            }
+            
+            grid.appendChild(labelsContainer);
+            
+            // Create grid cells
+            for (let y = 0; y < currentBattle.height; y++) {
+                for (let x = 0; x < currentBattle.width; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.dataset.coord = `${String.fromCharCode(65 + x)}${y + 1}`;
+                    cell.style.position = 'absolute';
+                    cell.style.left = `${x * cellSize}px`;
+                    cell.style.top = `${y * cellSize}px`;
+                    cell.style.width = `${cellSize}px`;
+                    cell.style.height = `${cellSize}px`;
+                    grid.appendChild(cell);
+                }
+            }
+            
+            return true;
         }
         
         // Modify fleeBattle to accept a return page
