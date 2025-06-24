@@ -83,7 +83,76 @@
             border-radius: 5px;
             color: #eee;
         }
+
+        /* Battle system styles */
+        <div id="BattleContainer" style="display: none;">
+            <div id="BattleGrid"></div>
+            <div id="BattleControls">
+                <button class="battle-button" id="FleeButton">Flee Battle</button>
+            </div>
+        </div>
         
+        #BattleContainer {
+            width: 80%;
+            margin: 20px auto;
+            position: relative;
+        }
+        
+        #BattleGrid {
+            position: relative;
+            margin: 30px 0 0 30px;
+            width: 100%;
+            height: 500px; /* Adjust as needed */
+            background-color: #333;
+            border: 1px solid #555;
+        }
+        
+        .grid-cell {
+            width: 60px;
+            height: 60px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            float: left;
+        }
+        
+        .token {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .token:hover {
+            transform: scale(1.1);
+        }
+        
+        .player-token {
+            background-color: #6bff6b;
+            border: 2px solid #4CAF50;
+        }
+        
+        .enemy-token {
+            background-color: #ff6b6b;
+            border: 2px solid #F44336;
+        }
+        
+        .battle-button {
+            padding: 10px 20px;
+            background-color: #444;
+            color: #eee;
+            border: 1px solid #555;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .battle-button:hover {
+            background-color: #555;
+        }
         b {
             color: #ff6b6b;
             font-weight: bold;
@@ -106,6 +175,15 @@
     </div>
     <div id="TextBox"></div>
     <input type="text" id="InputField" placeholder="Type your response here...">
+    
+    <!-- Add Battle Container -->
+<div id="BattleContainer" style="display: none;">
+    <div id="BattleGrid"></div>
+    <div id="BattleControls">
+        <button class="battle-button" id="EndTurnButton">End Turn</button>
+        <button class="battle-button" id="FleeButton">Flee</button>
+    </div>
+</div>
     
     <script>
         // Game state
@@ -570,7 +648,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Show battle container
             document.getElementById('BattleContainer').style.display = 'block';
             
-            // Set current battle - remove "Battle" prefix to get the key
+            // Set current battle
             const battleKey = battleId.replace('Battle', '').toLowerCase();
             currentBattle = battles[battleKey];
             
@@ -585,7 +663,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Spawn tokens
             spawnTokens();
         }
-
+        
         function endBattle(returnPage) {
             // Hide battle container
             document.getElementById('BattleContainer').style.display = 'none';
@@ -608,6 +686,10 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             updateTP();
             displayPage(1);
             
+            // Initialize battle system
+            document.getElementById('FleeButton').addEventListener('click', fleeBattle);
+            setupDropZones();
+            
             // Set up input event listener
             document.getElementById('InputField').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
@@ -615,14 +697,103 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 }
             });
             
-            // Set up TP buttons
+            // Initialize TP buttons
             document.getElementById('TPPlus').addEventListener('click', function() {
                 tp++;
                 updateTP();
             });
             
             document.getElementById('TPMinus').addEventListener('click', function() {
-                if (tp > 0) {  // Prevent going below 0 if desired
+                if (tp > 0) {
+                    tp--;
+                    updateTP();
+                }
+            });
+        }
+
+        function spawnTokens() {
+            battleState.tokens = [];
+            
+            // Spawn enemies
+            currentBattle.enemies.forEach((coord, index) => {
+                createToken(coord, 'enemy', index);
+            });
+            
+            // Spawn players
+            currentBattle.players.forEach((coord, index) => {
+                createToken(coord, 'player', index);
+            });
+        }
+        
+        function createToken(coord, type, id) {
+            const cell = document.querySelector(`[data-coord="${coord}"]`);
+            if (!cell) return;
+            
+            const token = document.createElement('div');
+            token.className = `token ${type}-token`;
+            token.dataset.type = type;
+            token.dataset.id = id;
+            token.dataset.coord = coord;
+            
+            // Make token draggable
+            token.draggable = true;
+            token.addEventListener('dragstart', handleDragStart);
+            
+            cell.appendChild(token);
+            battleState.tokens.push({
+                id: id,
+                type: type,
+                element: token,
+                coord: coord
+            });
+        }
+        
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.coord);
+            selectedToken = e.target;
+        }
+        
+        function setupDropZones() {
+            const cells = document.querySelectorAll('.grid-cell');
+            cells.forEach(cell => {
+                cell.addEventListener('dragover', handleDragOver);
+                cell.addEventListener('drop', handleDrop);
+            });
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            const newCoord = e.target.dataset.coord;
+            if (selectedToken) {
+                moveToken(selectedToken, newCoord);
+            }
+        }
+        
+        function moveToken(tokenElement, newCoord) {
+            const tokenData = battleState.tokens.find(t => t.element === tokenElement);
+            if (!tokenData) return;
+            
+            const newCell = document.querySelector(`[data-coord="${newCoord}"]`);
+            if (!newCell) return;
+            
+            // Move token
+            newCell.appendChild(tokenElement);
+            tokenElement.dataset.coord = newCoord;
+            tokenData.coord = newCoord;
+        }
+            
+            // Initialize TP buttons
+            document.getElementById('TPPlus').addEventListener('click', function() {
+                tp++;
+                updateTP();
+            });
+            
+            document.getElementById('TPMinus').addEventListener('click', function() {
+                if (tp > 0) {
                     tp--;
                     updateTP();
                 }
