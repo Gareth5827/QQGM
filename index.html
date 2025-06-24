@@ -189,6 +189,13 @@
         // Game state
         let currentPage = 1;
         let tp = 5;
+        // Battle state
+        let currentBattle = null;
+        let selectedToken = null;
+        let battleState = {
+            playerTurn: true,
+            tokens: []
+        };
         
         // Page content
         const pages = {
@@ -648,12 +655,11 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Show battle container
             document.getElementById('BattleContainer').style.display = 'block';
             
-            // Set current battle
-            const battleKey = battleId.replace('Battle', '').toLowerCase();
-            currentBattle = battles[battleKey];
+            // Set current battle - use the ID directly (it should be "battle1", not "Battle1")
+            currentBattle = battles[battleId];  // Changed from battleId.replace('Battle', '').toLowerCase()
             
             if (!currentBattle) {
-                console.error(`Battle configuration not found: ${battleKey}`);
+                console.error(`Battle configuration not found: ${battleId}`);
                 return;
             }
             
