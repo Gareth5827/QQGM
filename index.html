@@ -651,8 +651,8 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             if (pages[currentPage].options[input]) {
                 const nextPage = pages[currentPage].options[input];
                 
-                // Check if the option is a battle trigger (starts with "Battle")
-                if (typeof nextPage === 'string' && nextPage.startsWith('Battle')) {
+                // Check if the option is a battle trigger (starts with "battle" - case insensitive)
+                if (typeof nextPage === 'string' && nextPage.toLowerCase().startsWith('battle')) {
                     startBattle(nextPage);
                 } else {
                     displayPage(nextPage);
@@ -668,6 +668,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         }
 
         function startBattle(battleId) {
+            console.log(`Starting battle: ${battleId}`);
             // Hide text elements
             document.getElementById('TextBox').style.display = 'none';
             document.getElementById('InputField').style.display = 'none';
@@ -715,6 +716,9 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             if (currentBattle.image) {
                 const img = document.createElement('img');
                 img.src = currentBattle.image;
+                img.onerror = function() {
+                    this.style.display = 'none'; // Hide if image fails to load
+                };
                 img.alt = "Battle Background";
                 img.style.width = '100%';
                 img.style.height = '100%';
