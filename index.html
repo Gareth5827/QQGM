@@ -125,6 +125,7 @@ Type "continue" to continue.`
         options: {
             "next": 2,
             "continue": 2
+            "fight": "Battle1"
         }
             2: "As you reminisce of what the world around you is like and what your life has been like, you wake up from your “dream” with the same stale tone you’ve woken up to for many years prior. The TaskMaster awakes, turning on the stale florescent lighting in your living quarters. The small greyscale plastic and metal room lights up and you jump to your feet, getting in front the TaskMaster as soon as you can. You know what would happen if you didn’t.
 
@@ -448,6 +449,23 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 "continue": 18
             }
         };
+
+        const battles = {
+            battle1: { // Note lowercase to match the replacement
+                image: "battle1.jpg",
+                width: 6,
+                height: 6,
+                enemies: ["A1", "B2", "A3", "B4", "A5", "B6"],
+                players: ["F1", "E2", "F3", "E4", "F5", "E6"]
+            },
+            battle2: {
+                image: "battle2.jpg",
+                width: 8,
+                height: 8,
+                enemies: ["A1", "B2", "C3", "D4"],
+                players: ["H1", "G2", "F3", "E4"]
+            }
+        };
         
         // Update TP display and check for kill condition
         function updateTP() {
@@ -503,7 +521,13 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Check if input matches any option for current page
             if (pages[currentPage].options[input]) {
                 const nextPage = pages[currentPage].options[input];
-                displayPage(nextPage);
+                
+                // Check if the option is a battle trigger (starts with "Battle")
+                if (typeof nextPage === 'string' && nextPage.startsWith('Battle')) {
+                    startBattle(nextPage);
+                } else {
+                    displayPage(nextPage);
+                }
                 
                 // Optional: Add TP modifications for specific choices
                 if (input === 'run') tp -= 2; // Example penalty
@@ -512,6 +536,47 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 // Optional: Show error for invalid input
                 alert("Invalid choice! Try something else.");
             }
+        }
+
+        function startBattle(battleId) {
+            // Hide text box and input field
+            document.getElementById('TextBox').style.display = 'none';
+            document.getElementById('InputField').style.display = 'none';
+            
+            // Show battle container
+            document.getElementById('BattleContainer').style.display = 'block';
+            
+            // Set current battle - remove "Battle" prefix to get the key
+            const battleKey = battleId.replace('Battle', '').toLowerCase();
+            currentBattle = battles[battleKey];
+            
+            if (!currentBattle) {
+                console.error(`Battle configuration not found: ${battleKey}`);
+                return;
+            }
+            
+            // Create battle grid
+            createBattleGrid();
+            
+            // Spawn tokens
+            spawnTokens();
+        }
+
+        function endBattle(returnPage) {
+            // Hide battle container
+            document.getElementById('BattleContainer').style.display = 'none';
+            
+            // Show text box and input field
+            document.getElementById('TextBox').style.display = 'block';
+            document.getElementById('InputField').style.display = 'block';
+            
+            // Return to specified page
+            displayPage(returnPage);
+        }
+        
+        // Modify fleeBattle to accept a return page
+        function fleeBattle() {
+            endBattle(currentPage); // Return to current page
         }
         
         // Initialize the game
