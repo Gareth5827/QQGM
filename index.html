@@ -682,6 +682,20 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         }
         
         // Initialize the game
+        function moveToken(tokenElement, newCoord) {
+            const tokenData = battleState.tokens.find(t => t.element === tokenElement);
+            if (!tokenData) return;
+            
+            const newCell = document.querySelector(`[data-coord="${newCoord}"]`);
+            if (!newCell) return;
+            
+            // Move token
+            newCell.appendChild(tokenElement);
+            tokenElement.dataset.coord = newCoord;
+            tokenData.coord = newCoord;
+        }
+        
+        // Initialize the game
         function init() {
             updateTP();
             displayPage(1);
@@ -771,19 +785,6 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             if (selectedToken) {
                 moveToken(selectedToken, newCoord);
             }
-        }
-        
-        function moveToken(tokenElement, newCoord) {
-            const tokenData = battleState.tokens.find(t => t.element === tokenElement);
-            if (!tokenData) return;
-            
-            const newCell = document.querySelector(`[data-coord="${newCoord}"]`);
-            if (!newCell) return;
-            
-            // Move token
-            newCell.appendChild(tokenElement);
-            tokenElement.dataset.coord = newCoord;
-            tokenData.coord = newCoord;
         }
             
             // Initialize TP buttons
