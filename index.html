@@ -85,7 +85,9 @@
         }
 
         <div id="BattleContainer" style="display: none;">
-            <img id="BattleImage" src="" alt="Battle Background" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; z-index: -1;">
+            <div id="BattleImageContainer" style="position: absolute; width: 100%; height: 100%; z-index: -1;">
+                <!-- Image will be inserted here -->
+            </div>
             <div id="BattleGrid"></div>
             <div id="BattleControls">
                 <button class="battle-button" id="EndTurnButton">End Turn</button>
@@ -98,6 +100,19 @@
             margin: 20px auto;
             position: relative;
             display: none; /* This should be here, not inline */
+        }
+
+        #BattleControls {
+            display: none; /* Hide by default */
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        
+        #BattleContainer.active #BattleControls {
+            display: block; /* Show when battle is active */
         }
         
         #BattleGrid {
@@ -653,35 +668,60 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         }
 
         function startBattle(battleId) {
-            // Hide text box and input field
+            // Hide text elements
             document.getElementById('TextBox').style.display = 'none';
             document.getElementById('InputField').style.display = 'none';
             
             // Show battle container
-            document.getElementById('BattleContainer').style.display = 'block';
+            const battleContainer = document.getElementById('BattleContainer');
+            battleContainer.style.display = 'block';
+            battleContainer.classList.add('active');
             
-            // Set current battle - use the ID directly (it should be "battle1", not "Battle1")
-            currentBattle = battles[battleId];
+            // Set current battle
+            currentBattle = battles[battleId.toLowerCase()];
             
             if (!currentBattle) {
                 console.error(`Battle configuration not found: ${battleId}`);
                 return;
             }
             
-            // Create battle grid
+            // Initialize battle
             createBattleGrid();
-            
-            // Spawn tokens
             spawnTokens();
+            setupDropZones();
         }
-
+        
+        function endBattle(returnPage) {
+            // Hide battle container
+            const battleContainer = document.getElementById('BattleContainer');
+            battleContainer.style.display = 'none';
+            battleContainer.classList.remove('active');
+            
+            // Show text elements
+            document.getElementById('TextBox').style.display = 'block';
+            document.getElementById('InputField').style.display = 'block';
+            
+            // Return to specified page
+            displayPage(returnPage);
+        }
+        
         function createBattleGrid() {
             const grid = document.getElementById('BattleGrid');
             grid.innerHTML = '';
             
             // Set the battle background image
-            const battleImage = document.getElementById('BattleImage');
-            battleImage.src = currentBattle.image;
+            const imageContainer = document.getElementById('BattleImageContainer');
+            imageContainer.innerHTML = ''; // Clear previous image
+            if (currentBattle.image) {
+                const img = document.createElement('img');
+                img.src = currentBattle.image;
+                img.alt = "Battle Background";
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.style.opacity = '0.3';
+                imageContainer.appendChild(img);
+            }
             
             // Create coordinate labels container
             const labelsContainer = document.createElement('div');
@@ -732,18 +772,6 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                     grid.appendChild(cell);
                 }
             }
-        }
-        
-        function endBattle(returnPage) {
-            // Hide battle container
-            document.getElementById('BattleContainer').style.display = 'none';
-            
-            // Show text box and input field
-            document.getElementById('TextBox').style.display = 'block';
-            document.getElementById('InputField').style.display = 'block';
-            
-            // Return to specified page
-            displayPage(returnPage);
         }
         
         // Modify fleeBattle to accept a return page
