@@ -83,95 +83,7 @@
             border-radius: 5px;
             color: #eee;
         }
-
-        <div id="BattleContainer">
-            <div id="BattleImageContainer"></div> <!-- Uncommented and properly placed -->
-            <div id="BattleGrid"></div>
-            <div id="BattleControls">
-                <button class="battle-button" id="EndTurnButton">End Turn</button>
-                <button class="battle-button" id="FleeButton">Flee</button>
-            </div>
-        </div>
         
-        #BattleContainer {
-            width: 80%;
-            margin: 20px auto;
-            position: relative;
-            display: none; /* This should be here, not inline */
-        }
-
-        #BattleControls {
-            display: none; /* Hide by default */
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
-        }
-        
-        #BattleContainer.active #BattleControls {
-            display: block; /* Show when battle is active */
-        }
-        
-        #BattleGrid {
-            position: relative;
-            background-color: rgba(0,0,0,0.5);
-            overflow: hidden;
-        }
-        
-        .grid-cell {
-            width: 60px;
-            height: 60px;
-            border: 1px solid rgba(255,255,255,0.2);
-            position: absolute;
-            box-sizing: border-box;
-        }
-        
-        .token {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            cursor: move;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            z-index: 2;
-        }
-        
-        .token:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-        
-        .player-token {
-            background-color: #6bff6b;
-            border: 2px solid #4CAF50;
-        }
-        
-        .enemy-token {
-            background-color: #ff6b6b;
-            border: 2px solid #F44336;
-        }
-        
-        .battle-button {
-            padding: 10px 20px;
-            background-color: #444;
-            color: #eee;
-            border: 1px solid #555;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        
-        .battle-button:hover {
-            background-color: #555;
-        }
         b {
             color: #ff6b6b;
             font-weight: bold;
@@ -199,13 +111,6 @@
         // Game state
         let currentPage = 1;
         let tp = 5;
-        // Battle state
-        let currentBattle = null;
-        let selectedToken = null;
-        let battleState = {
-            playerTurn: true,
-            tokens: []
-        };
         
         // Page content
         const pages = {
@@ -221,7 +126,7 @@ Type "continue" to continue.`,
         options: {
             "next": 2,
             "continue": 2,
-            "fight": "battle1"
+            "fight": "Battle1"
         }
     },
         
@@ -568,23 +473,6 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             }
                 },
         };
-
-        const battles = {
-            battle1: {
-                image: "Battle1.png",
-                width: 6,
-                height: 6,
-                enemies: ["A1", "B2", "C3"],
-                players: ["F1", "E2", "D3"]
-            },
-            Battle2: {
-                image: "Battle2.png",
-                width: 8,
-                height: 8,
-                enemies: ["A1", "B2", "C3", "D4"],
-                players: ["H1", "G2", "F3", "E4"]
-            }
-        };
         
         // Update TP display and check for kill condition
         function updateTP() {
@@ -640,13 +528,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Check if input matches any option for current page
             if (pages[currentPage].options[input]) {
                 const nextPage = pages[currentPage].options[input];
-                
-                // Check if the option is a battle trigger (starts with "battle" - case insensitive)
-                if (typeof nextPage === 'string' && nextPage.toLowerCase().startsWith('battle')) {
-                    startBattle(nextPage);
-                } else {
-                    displayPage(nextPage);
-                }
+                displayPage(nextPage);
                 
                 // Optional: Add TP modifications for specific choices
                 if (input === 'run') tp -= 2; // Example penalty
@@ -656,184 +538,11 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 alert("Invalid choice! Try something else.");
             }
         }
-
-        function startBattle(battleId) {
-            console.log(`Starting battle: ${battleId}`);
-            
-            // Convert to lowercase to match our battles object
-            const battleKey = battleId.toLowerCase();
-            
-            // Debug: log available battles
-            console.log('Available battles:', Object.keys(battles));
-            
-            if (!battles[battleKey]) {
-                console.error(`Battle configuration not found: ${battleKey}`);
-                return;
-            }
-            
-            currentBattle = battles[battleKey];
-            console.log('Current battle config:', currentBattle);
-            
-            // Show battle container
-            const battleContainer = document.getElementById('BattleContainer');
-            if (!battleContainer) {
-                console.error('BattleContainer not found');
-                return;
-            }
-            battleContainer.style.display = 'block';
-            battleContainer.classList.add('active');
-            
-            // Hide text elements
-            document.getElementById('TextBox').style.display = 'none';
-            document.getElementById('InputField').style.display = 'none';
-            
-            // Initialize battle
-            if (!createBattleGrid()) {
-                console.error('Failed to create battle grid');
-                return;
-            }
-            
-            spawnTokens();
-            setupDropZones();
-            
-            // Debug: log grid and tokens
-            console.log('Grid cells:', document.querySelectorAll('.grid-cell').length);
-            console.log('Tokens created:', battleState.tokens.length);
-        }
-        
-        function endBattle(returnPage) {
-            // Hide battle container
-            const battleContainer = document.getElementById('BattleContainer');
-            battleContainer.style.display = 'none';
-            battleContainer.classList.remove('active');
-            
-            // Show text elements
-            document.getElementById('TextBox').style.display = 'block';
-            document.getElementById('InputField').style.display = 'block';
-            
-            // Return to specified page
-            displayPage(returnPage);
-        }
-        
-        function createBattleGrid() {
-            const grid = document.getElementById('BattleGrid');
-            if (!grid) {
-                console.error('BattleGrid element not found');
-                return false;
-            }
-            
-            // Clear the grid
-            grid.innerHTML = '';
-            
-            // Set grid dimensions based on battle size
-            const cellSize = 60;
-            grid.style.width = `${currentBattle.width * cellSize}px`;
-            grid.style.height = `${currentBattle.height * cellSize}px`;
-            
-            // Set the battle background image
-            const imageContainer = document.getElementById('BattleImageContainer');
-            if (imageContainer) {
-                imageContainer.innerHTML = '';
-                if (currentBattle.image) {
-                    const img = document.createElement('img');
-                    img.src = currentBattle.image;
-                    img.alt = "Battle Background";
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.objectFit = 'cover';
-                    img.style.opacity = '0.3';
-                    imageContainer.appendChild(img);
-                }
-            }
-            
-            // Create coordinate labels container
-            const labelsContainer = document.createElement('div');
-            labelsContainer.style.position = 'absolute';
-            labelsContainer.style.top = '0';
-            labelsContainer.style.left = '0';
-            labelsContainer.style.width = '100%';
-            labelsContainer.style.height = '100%';
-            labelsContainer.style.pointerEvents = 'none';
-            
-            // Create column labels (A, B, C...)
-            for (let x = 0; x < currentBattle.width; x++) {
-                const colLabel = document.createElement('div');
-                colLabel.textContent = String.fromCharCode(65 + x);
-                colLabel.style.position = 'absolute';
-                colLabel.style.top = '0';
-                colLabel.style.left = `${(x * cellSize) + 30}px`;
-                colLabel.style.width = `${cellSize}px`;
-                colLabel.style.textAlign = 'center';
-                colLabel.style.color = '#fff';
-                labelsContainer.appendChild(colLabel);
-            }
-            
-            // Create row labels (1, 2, 3...)
-            for (let y = 0; y < currentBattle.height; y++) {
-                const rowLabel = document.createElement('div');
-                rowLabel.textContent = (y + 1).toString();
-                rowLabel.style.position = 'absolute';
-                rowLabel.style.top = `${(y * cellSize) + 30}px`;
-                rowLabel.style.left = '0';
-                rowLabel.style.width = '30px';
-                rowLabel.style.textAlign = 'center';
-                rowLabel.style.color = '#fff';
-                labelsContainer.appendChild(rowLabel);
-            }
-            
-            grid.appendChild(labelsContainer);
-            
-            // Create grid cells
-            for (let y = 0; y < currentBattle.height; y++) {
-                for (let x = 0; x < currentBattle.width; x++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'grid-cell';
-                    cell.dataset.coord = `${String.fromCharCode(65 + x)}${y + 1}`;
-                    cell.style.position = 'absolute';
-                    cell.style.left = `${x * cellSize}px`;
-                    cell.style.top = `${y * cellSize}px`;
-                    cell.style.width = `${cellSize}px`;
-                    cell.style.height = `${cellSize}px`;
-                    grid.appendChild(cell);
-                }
-            }
-            
-            return true;
-        }
-        
-        // Modify fleeBattle to accept a return page
-        function fleeBattle() {
-            endBattle(currentPage); // Return to current page
-        }
-        
-        // Initialize the game
-        function moveToken(tokenElement, newCoord) {
-            const tokenData = battleState.tokens.find(t => t.element === tokenElement);
-            if (!tokenData) return;
-            
-            const newCell = document.querySelector(`[data-coord="${newCoord}"]`);
-            if (!newCell) return;
-            
-            // Move token
-            newCell.appendChild(tokenElement);
-            tokenElement.dataset.coord = newCoord;
-            tokenData.coord = newCoord;
-        }
         
         // Initialize the game
         function init() {
             updateTP();
             displayPage(1);
-            
-            // Initialize battle system
-            document.getElementById('FleeButton').addEventListener('click', fleeBattle);
-            setupDropZones();
-
-            document.getElementById('EndTurnButton').addEventListener('click', function() {
-                // Toggle turn
-                battleState.playerTurn = !battleState.playerTurn;
-                alert(battleState.playerTurn ? "Player's turn" : "Enemy's turn");
-            });
             
             // Set up input event listener
             document.getElementById('InputField').addEventListener('keypress', function(e) {
@@ -842,106 +551,14 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 }
             });
             
-            // Initialize TP buttons
+            // Set up TP buttons
             document.getElementById('TPPlus').addEventListener('click', function() {
                 tp++;
                 updateTP();
             });
             
             document.getElementById('TPMinus').addEventListener('click', function() {
-                if (tp > 0) {
-                    tp--;
-                    updateTP();
-                }
-            });
-        }
-
-        function spawnTokens() {
-            battleState.tokens = [];
-            
-            // Spawn enemies
-            currentBattle.enemies.forEach((coord, index) => {
-                createToken(coord, 'enemy', index);
-            });
-            
-            // Spawn players
-            currentBattle.players.forEach((coord, index) => {
-                createToken(coord, 'player', index);
-            });
-        }
-        
-        function createToken(coord, type, id) {
-            const cell = document.querySelector(`[data-coord="${coord}"]`);
-            if (!cell) {
-                console.error(`Cell not found: ${coord}`);
-                return;
-            }
-            
-            const token = document.createElement('div');
-            token.className = `token ${type}-token`;
-            token.dataset.type = type;
-            token.dataset.id = id;
-            token.dataset.coord = coord;
-            token.textContent = type === 'player' ? 'P' + (id + 1) : 'E' + (id + 1);
-            
-            token.draggable = true;
-            token.addEventListener('dragstart', handleDragStart);
-            
-            cell.appendChild(token);
-            battleState.tokens.push({
-                id: id,
-                type: type,
-                element: token,
-                coord: coord
-            });
-        }
-        
-        function handleDragStart(e) {
-            e.dataTransfer.setData('text/plain', e.target.dataset.coord);
-            selectedToken = e.target;
-        }
-        
-        function setupDropZones() {
-            const cells = document.querySelectorAll('.grid-cell');
-            cells.forEach(cell => {
-                cell.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    this.style.backgroundColor = 'rgba(255,255,255,0.1)';
-                });
-                
-                cell.addEventListener('dragleave', function() {
-                    this.style.backgroundColor = '';
-                });
-                
-                cell.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    this.style.backgroundColor = '';
-                    if (selectedToken) {
-                        moveToken(selectedToken, this.dataset.coord);
-                    }
-                });
-            });
-        }
-        
-        function handleDragOver(e) {
-            e.preventDefault();
-        }
-        
-        function handleDrop(e) {
-            e.preventDefault();
-            const newCoord = e.target.dataset.coord;
-            if (selectedToken) {
-                moveToken(selectedToken, newCoord);
-            }
-            
-            // Initialize TP buttons
-            document.getElementById('TPPlus').addEventListener('click', function() {
-                tp++;
-                updateTP();
-            });
-            
-            document.getElementById('TPMinus').addEventListener('click', function() {
-                if (tp > 0) {
+                if (tp > 0) {  // Prevent going below 0 if desired
                     tp--;
                     updateTP();
                 }
