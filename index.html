@@ -103,27 +103,35 @@
             position: relative;
         }
 
-        #BattleImage {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background-color: #333;
-            border: 1px solid #555;
-            border-radius: 5px;
-        }
-
+        /* Add these styles to your existing CSS */
         #BattleGrid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: grid;
+            grid-template-columns: repeat(var(--cols, 6), 60px); /* Fixed width cells */
+            grid-template-rows: repeat(var(--rows, 6), 60px); /* Fixed height cells */
         }
-
+        
         .grid-cell {
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            min-height: 60px;
+        }
+        
+        .token {
+            width: 40px; /* Smaller fixed size */
+            height: 40px;
+            transition: transform 0.1s;
+            transform: scale(1) !important; /* Prevent scaling during drag */
+        }
+        
+        .token.dragging {
+            opacity: 0.8;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+        
+        #BattleImage {
+            position: absolute;
+            opacity: 0.8; /* Make it faint so tokens are visible */
+            z-index: 1;
         }
 
         .grid-label {
@@ -143,17 +151,6 @@
             top: 50%;
             left: 5px;
             transform: translateY(-50%);
-        }
-
-        .token {
-            position: absolute;
-            width: 80%;
-            height: 80%;
-            border-radius: 50%;
-            top: 10%;
-            left: 10%;
-            cursor: move;
-            z-index: 10;
         }
 
         .enemy-token {
@@ -614,22 +611,36 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         function startBattle(battleName) {
             const battle = battles[battleName];
             if (!battle) return;
-
+        
             // Hide text box and show battle container
             document.getElementById('TextBox').style.display = 'none';
-            document.getElementById('BattleContainer').style.display = 'block';
-
-            // Set battle image
-            document.getElementById('BattleImage').src = battle.image;
-
+            const battleContainer = document.getElementById('BattleContainer');
+            battleContainer.style.display = 'block';
+        
+            // Set CSS variables for grid size
+            battleContainer.style.setProperty('--cols', battle.width);
+            battleContainer.style.setProperty('--rows', battle.height);
+        
+            // Handle battle image with error management
+            const battleImage = document.getElementById('BattleImage');
+            battleImage.onerror = function() {
+                this.style.display = 'none';
+                console.warn("Battle image failed to load:", battle.image);
+                document.getElementById('BattleGrid').style.backgroundColor = '#333';
+            };
+            battleImage.src = battle.image;
+            battleImage.style.display = 'block';
+        
             // Clear previous grid
             const grid = document.getElementById('BattleGrid');
             grid.innerHTML = '';
+            grid.style.backgroundColor = 'transparent';
             
-            // Set up grid columns and rows
-            grid.style.gridTemplateColumns = `repeat(${battle.width}, 1fr)`;
-            grid.style.gridTemplateRows = `repeat(${battle.height}, 1fr)`;
-
+            // Set up grid columns and rows with fixed sizing
+            grid.style.gridTemplateColumns = `repeat(${battle.width}, 60px)`;
+            grid.style.gridTemplateRows = `repeat(${battle.height}, 60px)`;
+            grid.style.gap = '2px';
+        
             // Create grid cells and labels
             for (let row = 0; row < battle.height; row++) {
                 for (let col = 0; col < battle.width; col++) {
@@ -657,19 +668,38 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                     grid.appendChild(cell);
                 }
             }
-
+        
             // Place enemy tokens
             battle.enemyTokens.forEach(pos => {
                 placeToken(pos, 'enemy-token');
             });
-
+        
             // Place ally tokens
             battle.allyTokens.forEach(pos => {
                 placeToken(pos, 'ally-token');
             });
-
+        
             // Set up drag and drop for tokens
             setupTokenDrag();
+        
+            // Add a continue button to exit battle
+            const continueButton = document.createElement('button');
+            continueButton.textContent = 'Continue';
+            continueButton.style.position = 'absolute';
+            continueButton.style.bottom = '20px';
+            continueButton.style.right = '20px';
+            continueButton.style.padding = '10px 20px';
+            continueButton.style.backgroundColor = '#444';
+            continueButton.style.color = '#eee';
+            continueButton.style.border = '1px solid #555';
+            continueButton.style.borderRadius = '5px';
+            continueButton.style.cursor = 'pointer';
+            continueButton.addEventListener('click', function() {
+                battleContainer.style.display = 'none';
+                document.getElementById('TextBox').style.display = 'block';
+                this.remove(); // Remove the button after use
+            });
+            battleContainer.appendChild(continueButton);
         }
 
         // Place a token at a specific grid position
