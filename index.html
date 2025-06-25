@@ -696,9 +696,22 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 // Token information data
             const tokenVariants = {
                 "maggot": [
-                    { name: "Young Maggot", health: () => Math.floor(Math.random() * 5) + 10 }, // 10-14
-                    { name: "Mature Maggot", health: () => 20 }, // Fixed 20
-                    { name: "Elder Maggot", health: () => Math.floor(Math.random() * 6) + 15 } // 15-20
+                    { name: "Sludge Maggot", health: () => Math.floor(Math.random() *9) + 15
+                        Power: +1    Agility: -1    Endurance: -1
+                        Wit: -1    Insight: +1    Allure: +1
+                        Advantage: +1    Swiftness: 11    Spirit: 13 },
+                    { name: "Bloated Maggot", health: () => Math.floor(Math.random() *9) + 15
+                        Power: +1    Agility: -1    Endurance: -1
+                        Wit: -1    Insight: +1    Allure: +1
+                        Advantage: +1    Swiftness: 11    Spirit: 13 },
+                    { name: "Slime Maggot", health: () => Math.floor(Math.random() *9) + 15
+                        Power: +1    Agility: -1    Endurance: -1
+                        Wit: -1    Insight: +1    Allure: +1
+                        Advantage: +1    Swiftness: 11    Spirit: 13 },
+                    { name: "Spawner Maggot", health: () => Math.floor(Math.random() *9) + 15
+                        Power: +1    Agility: -1    Endurance: -1
+                        Wit: -1    Insight: +1    Allure: +1
+                        Advantage: +1    Swiftness: 11    Spirit: 13 }
                 ],
                 "wasp": [
                     { name: "Worker Wasp", health: () => Math.floor(Math.random() * 6) + 15 }, // 15-20
