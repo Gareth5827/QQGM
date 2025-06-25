@@ -238,6 +238,20 @@
             min-height: 20px;
         }
     </style>
+    <style>
+    /* Add this to your existing styles */
+    .token-info {
+        position: absolute;
+        background-color: #333;
+        border: 1px solid #555;
+        border-radius: 5px;
+        padding: 10px;
+        z-index: 1000;
+        display: none;
+        width: 150px;
+        pointer-events: none;
+    }
+</style>
 </head>
 <body>
     <div id="TPContainer">
@@ -677,6 +691,16 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             }
                 },
         };
+
+                // Token information data
+        const tokenInfo = {
+            "maggot": "Health: " + (Math.floor(Math.random() * 11) + 15), // 15-25
+            "wasp": "Health: " + (Math.floor(Math.random() * 6) + 20),    // 20-25
+            "toxin": "Health: " + (Math.floor(Math.random() * 11) + 40),   // 40-50
+            "elder": "Health: " + (Math.floor(Math.random() * 11) + 25),   // 25-35
+            "spider": "Health: " + (Math.floor(Math.random() * 11) + 20),  // 20-30
+            "parasite": "Health: " + (Math.floor(Math.random() * 6) + 20)  // 20-25
+        };
         
         // Battle configurations
         const battles = {
@@ -769,6 +793,12 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             token.textContent = tokenType;
             token.dataset.type = tokenType;
             
+            // Create info box
+            const infoBox = document.createElement('div');
+            infoBox.className = 'token-info';
+            infoBox.textContent = tokenInfo[tokenType] || "";
+            token.appendChild(infoBox);
+            
             const battleControls = document.getElementById('BattleControls');
             battleControls.appendChild(token);
             
@@ -779,6 +809,14 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             token.style.left = centerX + 'px';
             token.style.top = centerY + 'px';
             
+            // Add double click event listener
+            token.addEventListener('dblclick', function() {
+                const infoBox = this.querySelector('.token-info');
+                if (infoBox) {
+                    infoBox.style.display = infoBox.style.display === 'block' ? 'none' : 'block';
+                }
+            });
+            
             token.addEventListener('mousedown', startDrag);
             return token;
         }
@@ -788,6 +826,12 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             if (e.button !== 0) return;
             
             activeToken = e.target;
+            
+            // Hide any visible info box when dragging starts
+            const infoBox = activeToken.querySelector('.token-info');
+            if (infoBox) {
+                infoBox.style.display = 'none';
+            }
             
             // Get the mouse position relative to the document
             const rect = activeToken.getBoundingClientRect();
