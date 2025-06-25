@@ -183,6 +183,7 @@
         }
     
         .token-info {
+            white-space: pre-line;
             position: absolute;
             background-color: #333;
             border: 1px solid #555;
@@ -696,22 +697,34 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 // Token information data
             const tokenVariants = {
                 "maggot": [
-                    { name: "Sludge Maggot", health: () => Math.floor(Math.random() *9) + 15
-                        Power: +1    Agility: -1    Endurance: -1
-                        Wit: -1    Insight: +1    Allure: +1
-                        Advantage: +1    Swiftness: 11    Spirit: 13 },
-                    { name: "Bloated Maggot", health: () => Math.floor(Math.random() *9) + 15
-                        Power: +1    Agility: -1    Endurance: -1
-                        Wit: -1    Insight: +1    Allure: +1
-                        Advantage: +1    Swiftness: 11    Spirit: 13 },
-                    { name: "Slime Maggot", health: () => Math.floor(Math.random() *9) + 15
-                        Power: +1    Agility: -1    Endurance: -1
-                        Wit: -1    Insight: +1    Allure: +1
-                        Advantage: +1    Swiftness: 11    Spirit: 13 },
-                    { name: "Spawner Maggot", health: () => Math.floor(Math.random() *9) + 15
-                        Power: +1    Agility: -1    Endurance: -1
-                        Wit: -1    Insight: +1    Allure: +1
-                        Advantage: +1    Swiftness: 11    Spirit: 13 }
+                    { 
+                        name: "Sludge Maggot", 
+                        info: () => `Health: ${Math.floor(Math.random() * 9) + 15}
+            Power: +1    Agility: -1    Endurance: -1
+            Wit: -1    Insight: +1    Allure: +1
+            Advantage: +1    Swiftness: 11    Spirit: 13`
+                    },
+                    { 
+                        name: "Bloated Maggot",
+                        info: () => `Health: ${Math.floor(Math.random() * 9) + 15}
+            Power: +1    Agility: -1    Endurance: -1
+            Wit: -1    Insight: +1    Allure: +1
+            Advantage: +1    Swiftness: 11    Spirit: 13`
+                    },
+                    { 
+                        name: "Slime Maggot",
+                        info: () => `Health: ${Math.floor(Math.random() * 9) + 15}
+            Power: +1    Agility: -1    Endurance: -1
+            Wit: -1    Insight: +1    Allure: +1
+            Advantage: +1    Swiftness: 11    Spirit: 13`
+                    },
+                    { 
+                        name: "Spawner Maggot",
+                        info: () => `Health: ${Math.floor(Math.random() * 9) + 15}
+            Power: +1    Agility: -1    Endurance: -1
+            Wit: -1    Insight: +1    Allure: +1
+            Advantage: +1    Swiftness: 11    Spirit: 13`
+                    }
                 ],
                 "wasp": [
                     { name: "Worker Wasp", health: () => Math.floor(Math.random() * 6) + 15 }, // 15-20
@@ -834,12 +847,13 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             token.textContent = variant.name;
             token.dataset.type = tokenType;
             
-            // Create info box with health value
+            // Create info box with all stats
             const infoBox = document.createElement('div');
             infoBox.className = 'token-info';
-            infoBox.textContent = `Health: ${variant.health()}`;
+            infoBox.textContent = variant.info();
             token.appendChild(infoBox);
             
+            // Rest of the function remains the same...
             const battleControls = document.getElementById('BattleControls');
             battleControls.appendChild(token);
             
