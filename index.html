@@ -1011,29 +1011,6 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             });
         }
         
-        // Token creation and dragging functions
-        function createToken(tokenType) {
-            const token = document.createElement('div');
-            token.className = 'active-token';
-            token.textContent = tokenType;
-            token.dataset.type = tokenType;
-            
-            // Position at mouse click or center if created from panel
-            token.style.position = 'absolute';
-            token.style.left = '0px';
-            token.style.top = '0px';
-            
-            document.body.appendChild(token); // Add to body instead of battle controls
-            
-            // If you want it centered initially when created from panel:
-            const panelRect = document.querySelector('.token[data-token="' + tokenType + '"]').getBoundingClientRect();
-            token.style.left = (panelRect.left + panelRect.width/2 - 25) + 'px';
-            token.style.top = (panelRect.top + panelRect.height/2 - 25) + 'px';
-            
-            token.addEventListener('mousedown', startDrag);
-            return token;
-        }
-        
         // Start the game when the page loads
         window.onload = init;
     </script>
