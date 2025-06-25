@@ -177,6 +177,9 @@
             z-index: 100;
             border: 2px solid #888;
             user-select: none;
+            /* Remove transform: translate(-50%, -50%) */
+            left: 0;
+            top: 0;
         }
         
         .token-remove-zone {
@@ -756,7 +759,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             }
         }
 
-                function createToken(tokenType) {
+        function createToken(tokenType) {
             const token = document.createElement('div');
             token.className = 'active-token';
             token.textContent = tokenType;
@@ -765,8 +768,11 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Position in the middle of the battle area
             const battleControls = document.getElementById('BattleControls');
             const rect = battleControls.getBoundingClientRect();
-            token.style.left = (rect.width / 2 - 25) + 'px';
-            token.style.top = (rect.height / 2 - 25) + 'px';
+            const centerX = rect.left + rect.width / 2 - 25; // 25 is half of token width
+            const centerY = rect.top + rect.height / 2 - 25; // 25 is half of token height
+            
+            token.style.left = centerX + 'px';
+            token.style.top = centerY + 'px';
             
             // Add drag functionality
             token.addEventListener('mousedown', startDrag);
@@ -781,10 +787,12 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             activeToken = e.target;
             isDragging = true;
             
-            // Calculate offset relative to token's top-left corner
-            const rect = activeToken.getBoundingClientRect();
-            offsetX = e.clientX - rect.left;
-            offsetY = e.clientY - rect.top;
+            // Get current position
+            const tokenRect = activeToken.getBoundingClientRect();
+            
+            // Calculate offset from mouse to token's top-left corner
+            offsetX = e.clientX - tokenRect.left;
+            offsetY = e.clientY - tokenRect.top;
             
             // Show remove zone
             document.getElementById('TokenRemoveZone').style.display = 'block';
@@ -795,9 +803,13 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         function doDrag(e) {
             if (!isDragging) return;
             
-            // Position token at cursor position minus offset
-            activeToken.style.left = (e.clientX - offsetX) + 'px';
-            activeToken.style.top = (e.clientY - offsetY) + 'px';
+            // Calculate new position
+            const newX = e.clientX - offsetX;
+            const newY = e.clientY - offsetY;
+            
+            // Set new position
+            activeToken.style.left = newX + 'px';
+            activeToken.style.top = newY + 'px';
         }
         
         function endDrag(e) {
@@ -805,11 +817,14 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             
             // Check if token is in remove zone
             const removeZone = document.getElementById('TokenRemoveZone');
-            const tokenRect = activeToken.getBoundingClientRect();
             const zoneRect = removeZone.getBoundingClientRect();
+            const tokenRect = activeToken.getBoundingClientRect();
             
-            if (e.clientX >= zoneRect.left && e.clientX <= zoneRect.right &&
-                e.clientY >= zoneRect.top && e.clientY <= zoneRect.bottom) {
+            // Check if token overlaps with remove zone
+            if (!(tokenRect.right < zoneRect.left || 
+                  tokenRect.left > zoneRect.right || 
+                  tokenRect.bottom < zoneRect.top || 
+                  tokenRect.top > zoneRect.bottom)) {
                 activeToken.remove();
             }
             
