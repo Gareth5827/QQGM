@@ -707,87 +707,170 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         };
 
                 // Token information data
-            const tokenVariants = {
-                "maggot": [
-                    { 
-            name: "Sludge Maggot", 
-            maxHealth: () => Math.floor(Math.random() * 9) + 15,
-            info: function() {
-            return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
-            Power: +1    Agility: -1    Endurance: -1
-            Wit: -1    Insight: +1    Allure: +1
-            Advantage: +1    Swiftness: 11    Spirit: 13
-            (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
-            (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
-            [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
-            (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it’s still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
-            (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`
-                    },
-                     
-            name: "Bloated Maggot",
-            maxHealth: () => Math.floor(Math.random() * 9) + 15,
-            info: function() {
-            return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
-            Power: +1    Agility: -1    Endurance: -1
-            Wit: -1    Insight: +1    Allure: +1
-            Advantage: +1    Swiftness: 11    Spirit: 13
-            (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
-            (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
-            [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
-            (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it’s still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
-            (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`
-                    },
-                     
-            name: "Slime Maggot",
-            maxHealth: () => Math.floor(Math.random() * 9) + 15,
-            info: function() {
-            return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
-            Power: +1    Agility: -1    Endurance: -1
-            Wit: -1    Insight: +1    Allure: +1
-            Advantage: +1    Swiftness: 11    Spirit: 13
-            (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
-            (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
-            [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
-            (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it’s still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
-            (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`
-                    },
-                     
-            name: "Spawner Maggot",
-            maxHealth: () => Math.floor(Math.random() * 9) + 15,
-            info: function() {
-            return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
-            Power: +1    Agility: -1    Endurance: -1
-            Wit: -1    Insight: +1    Allure: +1
-            Advantage: +1    Swiftness: 11    Spirit: 13
-            (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
-            (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
-            [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
-            (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it’s still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
-            (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`
+        const tokenVariants = {
+            "maggot": [
+                { 
+                    name: "Sludge Maggot", 
+                    maxHealth: () => Math.floor(Math.random() * 9) + 15,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
+        Power: +1    Agility: -1    Endurance: -1
+        Wit: -1    Insight: +1    Allure: +1
+        Advantage: +1    Swiftness: 11    Spirit: 13
+        (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
+        (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
+        [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
+        (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
+        (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
                     }
-                ],
-                "wasp": [
-                    { name: "Worker Wasp", health: () => Math.floor(Math.random() * 6) + 15 }, // 15-20
-                    { name: "Warrior Wasp", health: () => Math.floor(Math.random() * 11) + 20 }, // 20-30
-                    { name: "Queen Wasp", health: () => Math.floor(Math.random() * 16) + 30 } // 30-45
-                ],
-                "toxin": [
-                    { name: "Toxin Beetle", health: () => Math.floor(Math.random() * 11) + 30 }, // 30-40
-                    { name: "Alpha Toxin", health: () => Math.floor(Math.random() * 21) + 40 } // 40-60
-                ],
-                "elder": [
-                    { name: "Elder Beetle", health: () => Math.floor(Math.random() * 11) + 25 }, // 25-35
-                    { name: "Ancient Beetle", health: () => Math.floor(Math.random() * 16) + 35 } // 35-50
-                ],
-                "spider": [
-                    { name: "Web Spider", health: () => Math.floor(Math.random() * 6) + 15 }, // 15-20
-                    { name: "Huntress Spider", health: () => Math.floor(Math.random() * 11) + 20 }, // 20-30
-                    { name: "Broodmother", health: () => Math.floor(Math.random() * 21) + 30 } // 30-50
-                ],
-                "parasite": [
-                    { name: "Larval Parasite", health: () => Math.floor(Math.random() * 6) + 15 }, // 15-20
-                    { name: "Mature Parasite", health: () => Math.floor(Math.random() * 11) + 20 } // 20-30
-                ]
+                }, 
+                { 
+                    name: "Bloated Maggot",
+                    maxHealth: () => Math.floor(Math.random() * 9) + 15,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
+        Power: +1    Agility: -1    Endurance: -1
+        Wit: -1    Insight: +1    Allure: +1
+        Advantage: +1    Swiftness: 11    Spirit: 13
+        (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
+        (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
+        [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
+        (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
+        (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
+                    }
+                }, 
+                { 
+                    name: "Slime Maggot",
+                    maxHealth: () => Math.floor(Math.random() * 9) + 15,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
+        Power: +1    Agility: -1    Endurance: -1
+        Wit: -1    Insight: +1    Allure: +1
+        Advantage: +1    Swiftness: 11    Spirit: 13
+        (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
+        (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
+        [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
+        (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
+        (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
+                    }
+                }, 
+                { 
+                    name: "Spawner Maggot",
+                    maxHealth: () => Math.floor(Math.random() * 9) + 15,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
+        Power: +1    Agility: -1    Endurance: -1
+        Wit: -1    Insight: +1    Allure: +1
+        Advantage: +1    Swiftness: 11    Spirit: 13
+        (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
+        (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
+        [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
+        (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
+        (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
+                    }
+                }
+            ],
+            "wasp": [
+                { 
+                    name: "Worker Wasp", 
+                    maxHealth: () => Math.floor(Math.random() * 6) + 15,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                },
+                { 
+                    name: "Warrior Wasp", 
+                    maxHealth: () => Math.floor(Math.random() * 11) + 20,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                },
+                { 
+                    name: "Queen Wasp", 
+                    maxHealth: () => Math.floor(Math.random() * 16) + 30,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                }
+            ],
+            "toxin": [
+                { 
+                    name: "Toxin beetle", 
+                    maxHealth: () => Math.floor(Math.random() * 6) + 40,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                },
+                { 
+                    name: "Worker beetle", 
+                    maxHealth: () => Math.floor(Math.random() * 11) + 30,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                },
+                { 
+                    name: "Bruiser beetle", 
+                    maxHealth: () => Math.floor(Math.random() * 16) + 35,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                }
+            ],
+            "elder": [
+                { 
+                    name: "Elder beetle", 
+                    maxHealth: () => Math.floor(Math.random() * 6) + 35,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                },
+                { 
+                    name: "Toxic elder", 
+                    maxHealth: () => Math.floor(Math.random() * 6) + 20,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                }
+            ],
+            "spider": [
+                { 
+                    name: "Web weaver", 
+                    maxHealth: () => Math.floor(Math.random() * 6) + 15,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                },
+                { 
+                    name: "Hunter spider", 
+                    maxHealth: () => Math.floor(Math.random() * 11) + 20,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                },
+                { 
+                    name: "Toxic spider", 
+                    maxHealth: () => Math.floor(Math.random() * 16) + 30,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                }
+            ],
+            "parasite": [
+                { 
+                    name: "larval parasite", 
+                    maxHealth: () => Math.floor(Math.random() * 6) + 15,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                },
+                { 
+                    name: "Mature parasite", 
+                    maxHealth: () => Math.floor(Math.random() * 11) + 20,
+                    info: function() {
+                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
+                    }
+                }
+            ]
             };
         
         // Battle configurations
