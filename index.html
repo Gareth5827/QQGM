@@ -121,9 +121,11 @@
         
         #BattleControls {
             display: flex;
-            width: 80%;
+            width: 90%;
             justify-content: space-between;
             margin-top: 20px;
+            position: relative;
+            height: 200px;
         }
         
         #TokenList {
@@ -132,18 +134,9 @@
             border-radius: 5px;
             border: 1px solid #555;
             width: 200px;
-        }
-        
-        .token {
-            margin: 5px 0;
-            padding: 5px;
-            background-color: #444;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        
-        .token:hover {
-            background-color: #555;
+            position: absolute;
+            left: 0;
+            top: 0;
         }
         
         #DiceControls {
@@ -152,6 +145,47 @@
             border-radius: 5px;
             border: 1px solid #555;
             width: 200px;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        
+        /* Token styles */
+        .token {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #444;
+            border-radius: 3px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .token:hover {
+            background-color: #555;
+        }
+        
+        .active-token {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #666;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: move;
+            z-index: 100;
+            border: 2px solid #888;
+            user-select: none;
+        }
+        
+        .token-remove-zone {
+            position: absolute;
+            width: 200px;
+            height: 100%;
+            background-color: rgba(255, 0, 0, 0.2);
+            border: 2px dashed red;
+            display: none;
         }
         
         .die-input {
@@ -197,21 +231,6 @@
             text-align: center;
             min-height: 20px;
         }
-        
-        #EndBattleButton {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #ff6b6b;
-            color: #222;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        #EndBattleButton:hover {
-            background-color: #ff8e8e;
-        }
     </style>
 </head>
 <body>
@@ -238,6 +257,16 @@
                 <div class="token" data-token="elder">ElderToken</div>
                 <div class="token" data-token="spider">SpiderToken</div>
                 <div class="token" data-token="parasite">ParasiteToken</div>
+            </div>
+            <div id="TokenList">
+                <div class="token" data-token="player">PlayerToken</div>
+                <div class="token" data-token="maggot">MaggotToken</div>
+                <div class="token" data-token="wasp">WaspToken</div>
+                <div class="token" data-token="toxin">ToxinToken</div>
+                <div class="token" data-token="elder">ElderToken</div>
+                <div class="token" data-token="spider">SpiderToken</div>
+                <div class="token" data-token="parasite">ParasiteToken</div>
+                <div class="token-remove-zone" id="TokenRemoveZone">Drop here to remove</div>
             </div>
             <div id="DiceControls">
                 <div class="die-input">
@@ -277,6 +306,9 @@
         let tp = 5;
         let currentBattle = null;  // Make sure this is defined at the top
         let battleReturnPage = null;
+        let activeToken = null;
+        let isDragging = false;
+        let offsetX, offsetY;
         
         // Page content
         const pages = {
@@ -724,6 +756,67 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 battleReturnPage = null;
             }
         }
+
+                function createToken(tokenType) {
+            const token = document.createElement('div');
+            token.className = 'active-token';
+            token.textContent = tokenType;
+            token.dataset.type = tokenType;
+            
+            // Position in the middle of the battle area
+            const battleControls = document.getElementById('BattleControls');
+            const rect = battleControls.getBoundingClientRect();
+            token.style.left = (rect.width / 2 - 25) + 'px';
+            token.style.top = (rect.height / 2 - 25) + 'px';
+            
+            // Add drag functionality
+            token.addEventListener('mousedown', startDrag);
+            
+            battleControls.appendChild(token);
+            return token;
+        }
+        
+        function startDrag(e) {
+            if (e.button !== 0) return; // Only left mouse button
+            
+            activeToken = e.target;
+            isDragging = true;
+            
+            // Calculate offset
+            const rect = activeToken.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            
+            // Show remove zone
+            document.getElementById('TokenRemoveZone').style.display = 'block';
+            
+            e.preventDefault();
+        }
+        
+        function doDrag(e) {
+            if (!isDragging) return;
+            
+            activeToken.style.left = (e.clientX - offsetX) + 'px';
+            activeToken.style.top = (e.clientY - offsetY) + 'px';
+        }
+        
+        function endDrag(e) {
+            if (!isDragging) return;
+            
+            // Check if token is in remove zone
+            const removeZone = document.getElementById('TokenRemoveZone');
+            const tokenRect = activeToken.getBoundingClientRect();
+            const zoneRect = removeZone.getBoundingClientRect();
+            
+            if (e.clientX >= zoneRect.left && e.clientX <= zoneRect.right &&
+                e.clientY >= zoneRect.top && e.clientY <= zoneRect.bottom) {
+                activeToken.remove();
+            }
+            
+            isDragging = false;
+            activeToken = null;
+            removeZone.style.display = 'none';
+        }
         
         // Roll dice based on user input
         function rollDice() {
@@ -829,12 +922,20 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 });
             });
             
-            // Token click handlers (you can expand this functionality)
+            // Token click handlers - create tokens
             document.querySelectorAll('.token').forEach(token => {
                 token.addEventListener('click', function() {
-                    // Add your token click logic here
-                    console.log(`Selected token: ${this.dataset.token}`);
+                    createToken(this.dataset.token);
                 });
+            });
+            
+            // Set up drag events
+            document.addEventListener('mousemove', doDrag);
+            document.addEventListener('mouseup', endDrag);
+            
+            // Prevent text selection while dragging
+            document.addEventListener('selectstart', function(e) {
+                if (isDragging) e.preventDefault();
             });
         }
         
