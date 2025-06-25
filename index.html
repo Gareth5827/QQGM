@@ -799,12 +799,13 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             if (pages[currentPage].options[input]) {
                 const nextPage = pages[currentPage].options[input];
                 
-                // Check if the option value matches a battle name
+                // Check if this is a battle command
                 if (battles[nextPage]) {
                     startBattle(nextPage);
                     return;
                 }
                 
+                // Otherwise proceed with normal page navigation
                 displayPage(nextPage);
                 
                 // Optional: Add TP modifications for specific choices
