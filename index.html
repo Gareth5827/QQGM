@@ -795,17 +795,17 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 return;
             }
         
+            // Check if input matches a battle command
+            if (pages[currentPage].options[input] && 
+                typeof pages[currentPage].options[input] === 'string' && 
+                pages[currentPage].options[input].startsWith('Battle')) {
+                startBattle(pages[currentPage].options[input]);
+                return;
+            }
+        
             // Check if input matches any option for current page
             if (pages[currentPage].options[input]) {
                 const nextPage = pages[currentPage].options[input];
-                
-                // Check if this is a battle command
-                if (battles[nextPage]) {
-                    startBattle(nextPage);
-                    return;
-                }
-                
-                // Otherwise proceed with normal page navigation
                 displayPage(nextPage);
                 
                 // Optional: Add TP modifications for specific choices
