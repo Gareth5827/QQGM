@@ -957,7 +957,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             const variants = tokenVariants[tokenType];
             const variant = variants[Math.floor(Math.random() * variants.length)];
             
-            // Initialize current health - FIXED: Now properly sets to maxHealth
+            // Initialize current health
             variant.currentHealth = variant.maxHealth();
             
             // Set token text and data
@@ -970,7 +970,6 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             
             // Create stats display
             const statsDisplay = document.createElement('div');
-            // Function to update the stats display
             const updateStatsDisplay = () => {
                 statsDisplay.textContent = variant.info();
             };
@@ -999,7 +998,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 btn.style.padding = '3px 8px';
                 btn.style.cursor = 'pointer';
                 btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
+                    e.stopPropagation(); // Stop event from bubbling up
                     // Update health, ensuring it doesn't go below 0 or above max
                     variant.currentHealth = Math.max(0, 
                         Math.min(variant.maxHealth(), 
@@ -1014,7 +1013,6 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             infoBox.appendChild(healthControls);
             token.appendChild(infoBox);
             
-            // Rest of the token creation code...
             const battleControls = document.getElementById('BattleControls');
             battleControls.appendChild(token);
             
@@ -1034,7 +1032,14 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 }
             });
             
-            token.addEventListener('mousedown', startDrag);
+            // Only start drag on the token itself, not its children
+            token.addEventListener('mousedown', function(e) {
+                // Only start drag if clicking directly on the token, not its children
+                if (e.target === this) {
+                    startDrag(e);
+                }
+            });
+            
             return token;
         }
         
