@@ -966,7 +966,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             const variants = tokenVariants[tokenType];
             const variant = variants[Math.floor(Math.random() * variants.length)];
             
-            // Initialize current health
+            // Initialize current health - FIXED: Now properly sets to maxHealth
             variant.currentHealth = variant.maxHealth();
             
             // Set token text and data
@@ -979,7 +979,12 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             
             // Create stats display
             const statsDisplay = document.createElement('div');
-            statsDisplay.textContent = variant.info();
+            // Function to update the stats display
+            const updateStatsDisplay = () => {
+                statsDisplay.textContent = variant.info();
+            };
+            updateStatsDisplay(); // Initial display
+            
             infoBox.appendChild(statsDisplay);
             
             // Create health controls
@@ -1010,7 +1015,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                             variant.currentHealth + button.value));
                     
                     // Update the display
-                    statsDisplay.textContent = variant.info();
+                    updateStatsDisplay();
                 });
                 healthControls.appendChild(btn);
             });
