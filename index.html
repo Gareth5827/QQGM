@@ -198,6 +198,18 @@
             transform: translateX(-50%);
         }
         
+        .token-info button {
+            background-color: #444;
+            color: #eee;
+            border: 1px solid #555;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .token-info button:hover {
+            background-color: #555;
+        }
+        
         .token-remove-zone {
             position: fixed; /* Changed from absolute to fixed */
             right: 0;
@@ -698,8 +710,10 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             const tokenVariants = {
                 "maggot": [
                     { 
-                        name: "Sludge Maggot", 
-                        info: () => `Health: ${Math.floor(Math.random() * 9) + 15}
+            name: "Sludge Maggot", 
+            maxHealth: () => Math.floor(Math.random() * 9) + 15,
+            info: function() {
+            return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
             Power: +1    Agility: -1    Endurance: -1
             Wit: -1    Insight: +1    Allure: +1
             Advantage: +1    Swiftness: 11    Spirit: 13
@@ -710,8 +724,10 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`
                     },
                     { 
-                        name: "Bloated Maggot",
-                        info: () => `Health: ${Math.floor(Math.random() * 9) + 15}
+            name: "Bloated Maggot",
+            maxHealth: () => Math.floor(Math.random() * 9) + 15,
+            info: function() {
+            return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
             Power: +1    Agility: -1    Endurance: -1
             Wit: -1    Insight: +1    Allure: +1
             Advantage: +1    Swiftness: 11    Spirit: 13
@@ -722,8 +738,10 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`
                     },
                     { 
-                        name: "Slime Maggot",
-                        info: () => `Health: ${Math.floor(Math.random() * 9) + 15}
+            name: "Slime Maggot",
+            maxHealth: () => Math.floor(Math.random() * 9) + 15,
+            info: function() {
+            return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
             Power: +1    Agility: -1    Endurance: -1
             Wit: -1    Insight: +1    Allure: +1
             Advantage: +1    Swiftness: 11    Spirit: 13
@@ -734,8 +752,10 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`
                     },
                     { 
-                        name: "Spawner Maggot",
-                        info: () => `Health: ${Math.floor(Math.random() * 9) + 15}
+            name: "Spawner Maggot",
+            maxHealth: () => Math.floor(Math.random() * 9) + 15,
+            info: function() {
+            return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
             Power: +1    Agility: -1    Endurance: -1
             Wit: -1    Insight: +1    Allure: +1
             Advantage: +1    Swiftness: 11    Spirit: 13
@@ -863,17 +883,59 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             const variants = tokenVariants[tokenType];
             const variant = variants[Math.floor(Math.random() * variants.length)];
             
+            // Initialize current health
+            variant.currentHealth = variant.maxHealth();
+            
             // Set token text and data
             token.textContent = variant.name;
             token.dataset.type = tokenType;
             
-            // Create info box with all stats
+            // Create info box container
             const infoBox = document.createElement('div');
             infoBox.className = 'token-info';
-            infoBox.textContent = variant.info();
+            
+            // Create stats display
+            const statsDisplay = document.createElement('div');
+            statsDisplay.textContent = variant.info();
+            infoBox.appendChild(statsDisplay);
+            
+            // Create health controls
+            const healthControls = document.createElement('div');
+            healthControls.style.marginTop = '10px';
+            healthControls.style.display = 'flex';
+            healthControls.style.gap = '5px';
+            healthControls.style.justifyContent = 'center';
+            
+            // Create health buttons
+            const buttons = [
+                { text: '-5', value: -5 },
+                { text: '-1', value: -1 },
+                { text: '+1', value: 1 },
+                { text: '+5', value: 5 }
+            ];
+            
+            buttons.forEach(button => {
+                const btn = document.createElement('button');
+                btn.textContent = button.text;
+                btn.style.padding = '3px 8px';
+                btn.style.cursor = 'pointer';
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Update health, ensuring it doesn't go below 0 or above max
+                    variant.currentHealth = Math.max(0, 
+                        Math.min(variant.maxHealth(), 
+                            variant.currentHealth + button.value));
+                    
+                    // Update the display
+                    statsDisplay.textContent = variant.info();
+                });
+                healthControls.appendChild(btn);
+            });
+            
+            infoBox.appendChild(healthControls);
             token.appendChild(infoBox);
             
-            // Rest of the function remains the same...
+            // Rest of the token creation code...
             const battleControls = document.getElementById('BattleControls');
             battleControls.appendChild(token);
             
