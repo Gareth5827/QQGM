@@ -782,10 +782,10 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             activeToken = e.target;
             isDragging = true;
             
-            // Calculate offset
+            // Calculate offset relative to token center
             const rect = activeToken.getBoundingClientRect();
-            offsetX = e.clientX - rect.left;
-            offsetY = e.clientY - rect.top;
+            offsetX = e.clientX - (rect.left + rect.width / 2);
+            offsetY = e.clientY - (rect.top + rect.height / 2);
             
             // Show remove zone
             document.getElementById('TokenRemoveZone').style.display = 'block';
@@ -796,6 +796,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         function doDrag(e) {
             if (!isDragging) return;
             
+            // Position token center at cursor position minus offset
             activeToken.style.left = (e.clientX - offsetX) + 'px';
             activeToken.style.top = (e.clientY - offsetY) + 'px';
         }
