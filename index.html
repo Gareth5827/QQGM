@@ -177,6 +177,7 @@
             z-index: 100;
             border: 2px solid #888;
             user-select: none;
+            transform: translate(-50%, -50%); /* Center the token on cursor */
         }
         
         .token-remove-zone {
@@ -297,7 +298,6 @@
                 <div id="ResultBox"></div>
             </div>
         </div>
-        <button id="EndBattleButton">End Fight</button>
     </div>
     
     <script>
@@ -756,67 +756,6 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 battleReturnPage = null;
             }
         }
-
-                function createToken(tokenType) {
-            const token = document.createElement('div');
-            token.className = 'active-token';
-            token.textContent = tokenType;
-            token.dataset.type = tokenType;
-            
-            // Position in the middle of the battle area
-            const battleControls = document.getElementById('BattleControls');
-            const rect = battleControls.getBoundingClientRect();
-            token.style.left = (rect.width / 2 - 25) + 'px';
-            token.style.top = (rect.height / 2 - 25) + 'px';
-            
-            // Add drag functionality
-            token.addEventListener('mousedown', startDrag);
-            
-            battleControls.appendChild(token);
-            return token;
-        }
-        
-        function startDrag(e) {
-            if (e.button !== 0) return; // Only left mouse button
-            
-            activeToken = e.target;
-            isDragging = true;
-            
-            // Calculate offset
-            const rect = activeToken.getBoundingClientRect();
-            offsetX = e.clientX - rect.left;
-            offsetY = e.clientY - rect.top;
-            
-            // Show remove zone
-            document.getElementById('TokenRemoveZone').style.display = 'block';
-            
-            e.preventDefault();
-        }
-        
-        function doDrag(e) {
-            if (!isDragging) return;
-            
-            activeToken.style.left = (e.clientX - offsetX) + 'px';
-            activeToken.style.top = (e.clientY - offsetY) + 'px';
-        }
-        
-        function endDrag(e) {
-            if (!isDragging) return;
-            
-            // Check if token is in remove zone
-            const removeZone = document.getElementById('TokenRemoveZone');
-            const tokenRect = activeToken.getBoundingClientRect();
-            const zoneRect = removeZone.getBoundingClientRect();
-            
-            if (e.clientX >= zoneRect.left && e.clientX <= zoneRect.right &&
-                e.clientY >= zoneRect.top && e.clientY <= zoneRect.bottom) {
-                activeToken.remove();
-            }
-            
-            isDragging = false;
-            activeToken = null;
-            removeZone.style.display = 'none';
-        }
         
         // Roll dice based on user input
         function rollDice() {
@@ -886,9 +825,12 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Set up input event listener
             document.getElementById('InputField').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
+                    const input = this.value.toLowerCase().trim();
+                    this.value = '';
+                    
                     if (currentBattle) {
                         // In battle, only "end fight" command is processed
-                        if (this.value.toLowerCase().trim() === 'end fight') {
+                        if (input === 'end fight') {
                             endBattle();
                         }
                     } else {
@@ -904,7 +846,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             });
             
             document.getElementById('TPMinus').addEventListener('click', function() {
-                if (tp > 0) {  // Prevent going below 0 if desired
+                if (tp > 0) {
                     tp--;
                     updateTP();
                 }
@@ -912,7 +854,8 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             
             // Set up battle controls
             document.getElementById('RollButton').addEventListener('click', rollDice);
-            document.getElementById('EndBattleButton').addEventListener('click', endBattle);
+            
+            // Remove the EndBattleButton event listener since we removed the button
             
             // Prevent non-numbers in dice inputs
             document.querySelectorAll('.die-count').forEach(input => {
@@ -937,6 +880,72 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             document.addEventListener('selectstart', function(e) {
                 if (isDragging) e.preventDefault();
             });
+        }
+        
+        // Token creation and dragging functions
+        function createToken(tokenType) {
+            const token = document.createElement('div');
+            token.className = 'active-token';
+            token.textContent = tokenType;
+            token.dataset.type = tokenType;
+            
+            // Position in the middle of the battle area
+            const battleControls = document.getElementById('BattleControls');
+            const rect = battleControls.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            token.style.left = centerX + 'px';
+            token.style.top = centerY + 'px';
+            
+            // Add drag functionality
+            token.addEventListener('mousedown', startDrag);
+            
+            battleControls.appendChild(token);
+            return token;
+        }
+        
+        function startDrag(e) {
+            if (e.button !== 0) return; // Only left mouse button
+            
+            activeToken = e.target;
+            isDragging = true;
+            
+            // Calculate offset relative to token center
+            const rect = activeToken.getBoundingClientRect();
+            offsetX = e.clientX - (rect.left + rect.width / 2);
+            offsetY = e.clientY - (rect.top + rect.height / 2);
+            
+            // Show remove zone
+            document.getElementById('TokenRemoveZone').style.display = 'block';
+            
+            e.preventDefault();
+        }
+        
+        function doDrag(e) {
+            if (!isDragging) return;
+            
+            // Position token center at cursor position minus offset
+            activeToken.style.left = (e.clientX - offsetX) + 'px';
+            activeToken.style.top = (e.clientY - offsetY) + 'px';
+        }
+        
+        function endDrag(e) {
+            if (!isDragging) return;
+            
+            // Check if token is in remove zone
+            const removeZone = document.getElementById('TokenRemoveZone');
+            const tokenRect = activeToken.getBoundingClientRect();
+            const zoneRect = removeZone.getBoundingClientRect();
+            
+            if (e.clientX >= zoneRect.left && e.clientX <= zoneRect.right &&
+                e.clientY >= zoneRect.top && e.clientY <= zoneRect.bottom) {
+                activeToken.remove();
+            }
+            
+            isDragging = false;
+            activeToken = null;
+            removeZone.style.display = 'none';
         }
         
         // Start the game when the page loads
