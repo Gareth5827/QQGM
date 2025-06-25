@@ -694,14 +694,35 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         };
 
                 // Token information data
-        const tokenInfo = {
-            "maggot": "Health: " + (Math.floor(Math.random() * 11) + 15), // 15-25
-            "wasp": "Health: " + (Math.floor(Math.random() * 6) + 20),    // 20-25
-            "toxin": "Health: " + (Math.floor(Math.random() * 11) + 40),   // 40-50
-            "elder": "Health: " + (Math.floor(Math.random() * 11) + 25),   // 25-35
-            "spider": "Health: " + (Math.floor(Math.random() * 11) + 20),  // 20-30
-            "parasite": "Health: " + (Math.floor(Math.random() * 6) + 20)  // 20-25
-        };
+            const tokenVariants = {
+                "maggot": [
+                    { name: "Young Maggot", health: () => Math.floor(Math.random() * 5) + 10 }, // 10-14
+                    { name: "Mature Maggot", health: () => 20 }, // Fixed 20
+                    { name: "Elder Maggot", health: () => Math.floor(Math.random() * 6) + 15 } // 15-20
+                ],
+                "wasp": [
+                    { name: "Worker Wasp", health: () => Math.floor(Math.random() * 6) + 15 }, // 15-20
+                    { name: "Warrior Wasp", health: () => Math.floor(Math.random() * 11) + 20 }, // 20-30
+                    { name: "Queen Wasp", health: () => Math.floor(Math.random() * 16) + 30 } // 30-45
+                ],
+                "toxin": [
+                    { name: "Toxin Beetle", health: () => Math.floor(Math.random() * 11) + 30 }, // 30-40
+                    { name: "Alpha Toxin", health: () => Math.floor(Math.random() * 21) + 40 } // 40-60
+                ],
+                "elder": [
+                    { name: "Elder Beetle", health: () => Math.floor(Math.random() * 11) + 25 }, // 25-35
+                    { name: "Ancient Beetle", health: () => Math.floor(Math.random() * 16) + 35 } // 35-50
+                ],
+                "spider": [
+                    { name: "Web Spider", health: () => Math.floor(Math.random() * 6) + 15 }, // 15-20
+                    { name: "Huntress Spider", health: () => Math.floor(Math.random() * 11) + 20 }, // 20-30
+                    { name: "Broodmother", health: () => Math.floor(Math.random() * 21) + 30 } // 30-50
+                ],
+                "parasite": [
+                    { name: "Larval Parasite", health: () => Math.floor(Math.random() * 6) + 15 }, // 15-20
+                    { name: "Mature Parasite", health: () => Math.floor(Math.random() * 11) + 20 } // 20-30
+                ]
+            };
         
         // Battle configurations
         const battles = {
@@ -791,21 +812,27 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         function createToken(tokenType) {
             const token = document.createElement('div');
             token.className = 'active-token';
-            token.textContent = tokenType;
+            
+            // Get random variant for this token type
+            const variants = tokenVariants[tokenType];
+            const variant = variants[Math.floor(Math.random() * variants.length)];
+            
+            // Set token text and data
+            token.textContent = variant.name;
             token.dataset.type = tokenType;
             
-            // Create info box
+            // Create info box with health value
             const infoBox = document.createElement('div');
             infoBox.className = 'token-info';
-            infoBox.textContent = tokenInfo[tokenType] || "";
+            infoBox.textContent = `Health: ${variant.health()}`;
             token.appendChild(infoBox);
             
             const battleControls = document.getElementById('BattleControls');
             battleControls.appendChild(token);
             
             // Center the token initially
-            const centerX = (battleControls.offsetWidth - 50) / 2; // 50 is token width
-            const centerY = (battleControls.offsetHeight - 50) / 2; // 50 is token height
+            const centerX = (battleControls.offsetWidth - 50) / 2;
+            const centerY = (battleControls.offsetHeight - 50) / 2;
             
             token.style.left = centerX + 'px';
             token.style.top = centerY + 'px';
