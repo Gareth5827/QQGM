@@ -164,7 +164,7 @@
         }
         
         .active-token {
-            position: absolute;
+            position: absolute; /* Already set */
             width: 50px;
             height: 50px;
             background-color: #666;
@@ -176,15 +176,14 @@
             z-index: 100;
             border: 2px solid #888;
             user-select: none;
-            margin: 0; /* Remove any default margins */
-            padding: 0; /* Remove any default padding */
-            transform: none; /* Remove any transforms */
-            left: 0;
-            top: 0;
+            margin: 0;
+            padding: 0;
+            transform: none;
+            /* left and top will be set by JavaScript */
         }
         
         .token-remove-zone {
-            position: absolute;
+            position: fixed; /* Changed from absolute to fixed */
             right: 0;
             top: 0;
             width: 200px;
@@ -192,6 +191,7 @@
             background-color: rgba(255, 0, 0, 0.2);
             border: 2px dashed red;
             display: none;
+            z-index: 99; /* Below dragging tokens */
         }
         
         .die-input {
@@ -789,18 +789,17 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             
             activeToken = e.target;
             
-            // Get the mouse position relative to the token
+            // Get the mouse position relative to the document
             const rect = activeToken.getBoundingClientRect();
             offsetX = e.clientX - rect.left;
             offsetY = e.clientY - rect.top;
             
-            // Change cursor to grabbing
             activeToken.style.cursor = 'grabbing';
-            
-            // Show remove zone
             document.getElementById('TokenRemoveZone').style.display = 'block';
             
-            // Add event listeners
+            // Bring to front while dragging
+            activeToken.style.zIndex = '1000';
+            
             document.addEventListener('mousemove', doDrag);
             document.addEventListener('mouseup', endDrag);
         }
@@ -808,20 +807,16 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         function doDrag(e) {
             if (!activeToken) return;
             
-            // Calculate new position relative to BattleControls
-            const battleControls = document.getElementById('BattleControls');
-            const controlsRect = battleControls.getBoundingClientRect();
+            // Calculate new position relative to the document
+            let newX = e.clientX - offsetX;
+            let newY = e.clientY - offsetY;
             
-            // Calculate position within the controls area
-            let newX = e.clientX - controlsRect.left - offsetX;
-            let newY = e.clientY - controlsRect.top - offsetY;
-            
-            // Constrain to battle area
-            newX = Math.max(0, Math.min(newX, battleControls.offsetWidth - activeToken.offsetWidth));
-            newY = Math.max(0, Math.min(newY, battleControls.offsetHeight - activeToken.offsetHeight));
-            
+            // Apply the new position
             activeToken.style.left = newX + 'px';
             activeToken.style.top = newY + 'px';
+            
+            // Convert to absolute positioning
+            activeToken.style.position = 'absolute';
         }
         
         function endDrag(e) {
@@ -832,22 +827,20 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             const zoneRect = removeZone.getBoundingClientRect();
             const tokenRect = activeToken.getBoundingClientRect();
             
-            // Check for overlap
             if (tokenRect.right > zoneRect.left && 
                 tokenRect.left < zoneRect.right &&
                 tokenRect.bottom > zoneRect.top && 
                 tokenRect.top < zoneRect.bottom) {
                 activeToken.remove();
+            } else {
+                // Reset z-index when dropped
+                activeToken.style.zIndex = '100';
             }
             
-            // Reset cursor
             activeToken.style.cursor = 'grab';
             activeToken = null;
-            
-            // Hide remove zone
             removeZone.style.display = 'none';
             
-            // Remove event listeners
             document.removeEventListener('mousemove', doDrag);
             document.removeEventListener('mouseup', endDrag);
         }
@@ -981,19 +974,19 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             token.textContent = tokenType;
             token.dataset.type = tokenType;
             
-            // Position in the middle of the battle area
-            const battleControls = document.getElementById('BattleControls');
-            const rect = battleControls.getBoundingClientRect();
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
+            // Position at mouse click or center if created from panel
+            token.style.position = 'absolute';
+            token.style.left = '0px';
+            token.style.top = '0px';
             
-            token.style.left = centerX + 'px';
-            token.style.top = centerY + 'px';
+            document.body.appendChild(token); // Add to body instead of battle controls
             
-            // Add drag functionality
+            // If you want it centered initially when created from panel:
+            const panelRect = document.querySelector('.token[data-token="' + tokenType + '"]').getBoundingClientRect();
+            token.style.left = (panelRect.left + panelRect.width/2 - 25) + 'px';
+            token.style.top = (panelRect.top + panelRect.height/2 - 25) + 'px';
+            
             token.addEventListener('mousedown', startDrag);
-            
-            battleControls.appendChild(token);
             return token;
         }
         
