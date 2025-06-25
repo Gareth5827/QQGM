@@ -119,15 +119,6 @@
             border-radius: 5px;
         }
         
-        #BattleControls {
-            display: flex;
-            width: 90%;
-            justify-content: space-between;
-            margin-top: 20px;
-            position: relative;
-            height: 200px;
-        }
-        
         #TokenList {
             background-color: #333;
             padding: 10px;
@@ -164,6 +155,14 @@
             background-color: #555;
         }
         
+        /* Add this to your existing styles */
+        #BattleControls {
+            position: relative;
+            width: 100%;
+            height: 200px; /* Match your existing height */
+            overflow: visible; /* Ensure tokens can move freely */
+        }
+        
         .active-token {
             position: absolute;
             width: 50px;
@@ -173,17 +172,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: move;
+            cursor: grab;
             z-index: 100;
             border: 2px solid #888;
             user-select: none;
-            /* Remove transform: translate(-50%, -50%) */
+            margin: 0; /* Remove any default margins */
+            padding: 0; /* Remove any default padding */
+            transform: none; /* Remove any transforms */
             left: 0;
             top: 0;
         }
         
         .token-remove-zone {
             position: absolute;
+            right: 0;
+            top: 0;
             width: 200px;
             height: 100%;
             background-color: rgba(255, 0, 0, 0.2);
@@ -310,7 +313,9 @@
         let battleReturnPage = null;
         let activeToken = null;
         let isDragging = false;
-        let offsetX, offsetY;
+        let activeToken = null;
+        let offsetX = 0;
+        let offsetY = 0;
         
         // Page content
         const pages = {
@@ -765,72 +770,87 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             token.textContent = tokenType;
             token.dataset.type = tokenType;
             
-            // Position in the middle of the battle area
             const battleControls = document.getElementById('BattleControls');
-            const rect = battleControls.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2 - 25; // 25 is half of token width
-            const centerY = rect.top + rect.height / 2 - 25; // 25 is half of token height
+            battleControls.appendChild(token);
+            
+            // Center the token initially
+            const centerX = (battleControls.offsetWidth - token.offsetWidth) / 2;
+            const centerY = (battleControls.offsetHeight - token.offsetHeight) / 2;
             
             token.style.left = centerX + 'px';
             token.style.top = centerY + 'px';
             
-            // Add drag functionality
             token.addEventListener('mousedown', startDrag);
-            
-            battleControls.appendChild(token);
             return token;
         }
         
         function startDrag(e) {
-            if (e.button !== 0) return; // Only left mouse button
+            e.preventDefault();
+            if (e.button !== 0) return;
             
             activeToken = e.target;
-            isDragging = true;
             
-            // Get current position
-            const tokenRect = activeToken.getBoundingClientRect();
+            // Get the mouse position relative to the token
+            const rect = activeToken.getBoundingClientRect();
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
             
-            // Calculate offset from mouse to token's top-left corner
-            offsetX = e.clientX - tokenRect.left;
-            offsetY = e.clientY - tokenRect.top;
+            // Change cursor to grabbing
+            activeToken.style.cursor = 'grabbing';
             
             // Show remove zone
             document.getElementById('TokenRemoveZone').style.display = 'block';
             
-            e.preventDefault();
+            // Add event listeners
+            document.addEventListener('mousemove', doDrag);
+            document.addEventListener('mouseup', endDrag);
         }
         
         function doDrag(e) {
-            if (!isDragging) return;
+            if (!activeToken) return;
             
-            // Calculate new position
-            const newX = e.clientX - offsetX;
-            const newY = e.clientY - offsetY;
+            // Calculate new position relative to BattleControls
+            const battleControls = document.getElementById('BattleControls');
+            const controlsRect = battleControls.getBoundingClientRect();
             
-            // Set new position
+            // Calculate position within the controls area
+            let newX = e.clientX - controlsRect.left - offsetX;
+            let newY = e.clientY - controlsRect.top - offsetY;
+            
+            // Constrain to battle area
+            newX = Math.max(0, Math.min(newX, battleControls.offsetWidth - activeToken.offsetWidth));
+            newY = Math.max(0, Math.min(newY, battleControls.offsetHeight - activeToken.offsetHeight));
+            
             activeToken.style.left = newX + 'px';
             activeToken.style.top = newY + 'px';
         }
         
         function endDrag(e) {
-            if (!isDragging) return;
+            if (!activeToken) return;
             
             // Check if token is in remove zone
             const removeZone = document.getElementById('TokenRemoveZone');
             const zoneRect = removeZone.getBoundingClientRect();
             const tokenRect = activeToken.getBoundingClientRect();
             
-            // Check if token overlaps with remove zone
-            if (!(tokenRect.right < zoneRect.left || 
-                  tokenRect.left > zoneRect.right || 
-                  tokenRect.bottom < zoneRect.top || 
-                  tokenRect.top > zoneRect.bottom)) {
+            // Check for overlap
+            if (tokenRect.right > zoneRect.left && 
+                tokenRect.left < zoneRect.right &&
+                tokenRect.bottom > zoneRect.top && 
+                tokenRect.top < zoneRect.bottom) {
                 activeToken.remove();
             }
             
-            isDragging = false;
+            // Reset cursor
+            activeToken.style.cursor = 'grab';
             activeToken = null;
+            
+            // Hide remove zone
             removeZone.style.display = 'none';
+            
+            // Remove event listeners
+            document.removeEventListener('mousemove', doDrag);
+            document.removeEventListener('mouseup', endDrag);
         }
         
         // Roll dice based on user input
