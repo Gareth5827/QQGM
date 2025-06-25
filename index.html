@@ -177,7 +177,7 @@
             z-index: 100;
             border: 2px solid #888;
             user-select: none;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%); /* Center the token on cursor */
         }
         
         .token-remove-zone {
@@ -298,7 +298,6 @@
                 <div id="ResultBox"></div>
             </div>
         </div>
-        <button id="EndBattleButton">End Fight</button>
     </div>
     
     <script>
@@ -914,7 +913,8 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             
             // Set up battle controls
             document.getElementById('RollButton').addEventListener('click', rollDice);
-            document.getElementById('EndBattleButton').addEventListener('click', endBattle);
+            
+            // Remove the EndBattleButton event listener since we removed the button
             
             // Prevent non-numbers in dice inputs
             document.querySelectorAll('.die-count').forEach(input => {
@@ -939,6 +939,29 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             document.addEventListener('selectstart', function(e) {
                 if (isDragging) e.preventDefault();
             });
+        }
+        
+        // Token creation and dragging functions
+        function createToken(tokenType) {
+            const token = document.createElement('div');
+            token.className = 'active-token';
+            token.textContent = tokenType;
+            token.dataset.type = tokenType;
+            
+            // Position in the middle of the battle area
+            const battleControls = document.getElementById('BattleControls');
+            const rect = battleControls.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            token.style.left = centerX + 'px';
+            token.style.top = centerY + 'px';
+            
+            // Add drag functionality
+            token.addEventListener('mousedown', startDrag);
+            
+            battleControls.appendChild(token);
+            return token;
         }
         
         // Start the game when the page loads
