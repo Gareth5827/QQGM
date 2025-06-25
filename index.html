@@ -163,40 +163,39 @@
             overflow: visible; /* Ensure tokens can move freely */
         }
         
-    .active-token {
-        position: absolute; /* Already set */
-        width: 50px;
-        height: 50px;
-        background-color: #666;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: grab;
-        z-index: 100;
-        border: 2px solid #888;
-        user-select: none;
-        margin: 0;
-        padding: 0;
-        transform: none;
-        /* left and top will be set by JavaScript */
-    }
-
-    .token-info {
-        position: absolute;
-        background-color: #333;
-        border: 1px solid #555;
-        border-radius: 5px;
-        padding: 10px;
-        z-index: 1000;
-        display: none;
-        width: 150px;
-        pointer-events: none;
-        top: 100%; /* Position below the token */
-        left: 50%;
-        transform: translateX(-50%);
-        margin-top: 5px;
-    }
+        .active-token {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #666;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            z-index: 100;
+            border: 2px solid #888;
+            user-select: none;
+            margin: 0;
+            padding: 0;
+            transform: none;
+            /* left and top will be set by JavaScript */
+        }
+    
+        .token-info {
+            position: absolute;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 10px;
+            z-index: 1000;
+            display: none;
+            width: 150px;
+            pointer-events: none;
+            top: calc(100% + 5px); /* Position below the token */
+            left: 50%;
+            transform: translateX(-50%);
+        }
         
         .token-remove-zone {
             position: fixed; /* Changed from absolute to fixed */
@@ -805,15 +804,15 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             battleControls.appendChild(token);
             
             // Center the token initially
-            const centerX = (battleControls.offsetWidth - token.offsetWidth) / 2;
-            const centerY = (battleControls.offsetHeight - token.offsetHeight) / 2;
+            const centerX = (battleControls.offsetWidth - 50) / 2; // 50 is token width
+            const centerY = (battleControls.offsetHeight - 50) / 2; // 50 is token height
             
             token.style.left = centerX + 'px';
             token.style.top = centerY + 'px';
             
             // Add double click event listener
             token.addEventListener('dblclick', function(e) {
-                e.stopPropagation(); // Prevent event bubbling
+                e.stopPropagation();
                 const infoBox = this.querySelector('.token-info');
                 if (infoBox) {
                     infoBox.style.display = infoBox.style.display === 'block' ? 'none' : 'block';
@@ -828,7 +827,8 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             e.preventDefault();
             if (e.button !== 0) return;
             
-            activeToken = e.target;
+            activeToken = e.target.closest('.active-token');
+            if (!activeToken) return;
             
             // Hide any visible info box when dragging starts
             const infoBox = activeToken.querySelector('.token-info');
@@ -836,7 +836,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 infoBox.style.display = 'none';
             }
             
-            // Get the mouse position relative to the document
+            // Get the mouse position relative to the token
             const rect = activeToken.getBoundingClientRect();
             offsetX = e.clientX - rect.left;
             offsetY = e.clientY - rect.top;
@@ -854,9 +854,9 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         function doDrag(e) {
             if (!activeToken) return;
             
-            // Calculate new position relative to the document
-            let newX = e.clientX - offsetX;
-            let newY = e.clientY - offsetY;
+            // Calculate new position
+            let newX = e.clientX - offsetX - document.getElementById('BattleControls').getBoundingClientRect().left;
+            let newY = e.clientY - offsetY - document.getElementById('BattleControls').getBoundingClientRect().top;
             
             // Apply the new position
             activeToken.style.left = newX + 'px';
