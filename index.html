@@ -192,7 +192,6 @@
             z-index: 1000;
             display: none;
             width: 450px;
-            pointer-events: none;
             top: calc(100% + 5px); /* Position below the token */
             left: 50%;
             transform: translateX(-50%);
@@ -967,6 +966,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Create info box container
             const infoBox = document.createElement('div');
             infoBox.className = 'token-info';
+            infoBox.style.pointerEvents = 'auto'; // Allow events on the info box
             
             // Create stats display
             const statsDisplay = document.createElement('div');
@@ -1050,6 +1050,10 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 const infoBox = this.querySelector('.token-info');
                 if (infoBox) {
                     infoBox.style.display = infoBox.style.display === 'block' ? 'none' : 'block';
+                    // When showing, bring to front
+                    if (infoBox.style.display === 'block') {
+                        infoBox.style.zIndex = '1001';
+                    }
                 }
             });
             
