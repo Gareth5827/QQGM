@@ -992,13 +992,18 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 { text: '+5', value: 5 }
             ];
             
+            // In the createToken function, modify the button creation code:
             buttons.forEach(button => {
                 const btn = document.createElement('button');
                 btn.textContent = button.text;
                 btn.style.padding = '3px 8px';
                 btn.style.cursor = 'pointer';
+                
+                // Add this line to prevent drag from starting when clicking buttons
+                btn.addEventListener('mousedown', e => e.stopPropagation());
+                
                 btn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Stop event from bubbling up
+                    e.stopPropagation();
                     // Update health, ensuring it doesn't go below 0 or above max
                     variant.currentHealth = Math.max(0, 
                         Math.min(variant.maxHealth(), 
@@ -1034,7 +1039,7 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             
             // Only start drag on the token itself, not its children
             token.addEventListener('mousedown', function(e) {
-                // Only start drag if clicking directly on the token, not its children
+                // Only start drag if clicking directly on the token (not its children)
                 if (e.target === this) {
                     startDrag(e);
                 }
