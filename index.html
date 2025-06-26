@@ -992,26 +992,42 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 { text: '+5', value: 5 }
             ];
             
-            // In the createToken function, modify the button creation code:
             buttons.forEach(button => {
                 const btn = document.createElement('button');
                 btn.textContent = button.text;
                 btn.style.padding = '3px 8px';
                 btn.style.cursor = 'pointer';
                 
-                // Add this line to prevent drag from starting when clicking buttons
-                btn.addEventListener('mousedown', e => e.stopPropagation());
+                // Add debug info to the button
+                btn.dataset.debugValue = button.value;
+                
+                // Prevent drag from starting when clicking buttons
+                btn.addEventListener('mousedown', e => {
+                    console.log(`Button mousedown: ${button.text} (value: ${button.value})`);
+                    e.stopPropagation();
+                });
                 
                 btn.addEventListener('click', (e) => {
+                    console.log(`Button clicked: ${button.text} (value: ${button.value})`);
                     e.stopPropagation();
+                    e.preventDefault(); // Add this for extra safety
+                    
                     // Update health, ensuring it doesn't go below 0 or above max
                     variant.currentHealth = Math.max(0, 
                         Math.min(variant.maxHealth(), 
                             variant.currentHealth + button.value));
                     
+                    // Debug log the health change
+                    console.log(`Health changed by ${button.value}. New health: ${variant.currentHealth}/${variant.maxHealth()}`);
+                    
                     // Update the display
                     updateStatsDisplay();
                 });
+                
+                // Add mouseenter/mouseleave for additional debugging
+                btn.addEventListener('mouseenter', () => console.log(`Mouse entered ${button.text} button`));
+                btn.addEventListener('mouseleave', () => console.log(`Mouse left ${button.text} button`));
+                
                 healthControls.appendChild(btn);
             });
             
