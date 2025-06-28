@@ -700,168 +700,85 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         const tokenVariants = {
             "maggot": [
                 { 
-                    name: "Sludge Maggot", 
-                    maxHealth: () => Math.floor(Math.random() * 9) + 15,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
-        Power: +1    Agility: -1    Endurance: -1
-        Wit: -1    Insight: +1    Allure: +1
-        Advantage: +1    Swiftness: 11    Spirit: 13
-        (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
-        (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
-        [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
-        (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
-        (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
-                    }
-                }, 
+                    name: "Sludge Maggot",
+                    healthRange: [15, 23] // min 15, max 23 (15 + random 0-8)
+                },
                 { 
                     name: "Bloated Maggot",
-                    maxHealth: () => Math.floor(Math.random() * 9) + 15,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
-        Power: +1    Agility: -1    Endurance: -1
-        Wit: -1    Insight: +1    Allure: +1
-        Advantage: +1    Swiftness: 11    Spirit: 13
-        (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
-        (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
-        [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
-        (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
-        (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
-                    }
-                }, 
+                    healthRange: [15, 23]
+                },
                 { 
                     name: "Slime Maggot",
-                    maxHealth: () => Math.floor(Math.random() * 9) + 15,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
-        Power: +1    Agility: -1    Endurance: -1
-        Wit: -1    Insight: +1    Allure: +1
-        Advantage: +1    Swiftness: 11    Spirit: 13
-        (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
-        (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
-        [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
-        (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
-        (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
-                    }
-                }, 
+                    healthRange: [15, 23]
+                },
                 { 
                     name: "Spawner Maggot",
-                    maxHealth: () => Math.floor(Math.random() * 9) + 15,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}
-        Power: +1    Agility: -1    Endurance: -1
-        Wit: -1    Insight: +1    Allure: +1
-        Advantage: +1    Swiftness: 11    Spirit: 13
-        (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
-        (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
-        [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
-        (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
-        (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
-                    }
+                    healthRange: [15, 23]
                 }
             ],
             "wasp": [
                 { 
-                    name: "Worker Wasp", 
-                    maxHealth: () => Math.floor(Math.random() * 6) + 15,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Worker Wasp",
+                    healthRange: [15, 20] // min 15, max 20 (15 + random 0-5)
                 },
                 { 
-                    name: "Warrior Wasp", 
-                    maxHealth: () => Math.floor(Math.random() * 11) + 20,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Warrior Wasp",
+                    healthRange: [20, 30] // min 20, max 30 (20 + random 0-10)
                 },
                 { 
-                    name: "Queen Wasp", 
-                    maxHealth: () => Math.floor(Math.random() * 16) + 30,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Queen Wasp",
+                    healthRange: [30, 45] // min 30, max 45 (30 + random 0-15)
                 }
             ],
             "toxin": [
                 { 
-                    name: "Toxin beetle", 
-                    maxHealth: () => Math.floor(Math.random() * 6) + 40,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Toxin beetle",
+                    healthRange: [40, 45] // min 40, max 45 (40 + random 0-5)
                 },
                 { 
-                    name: "Worker beetle", 
-                    maxHealth: () => Math.floor(Math.random() * 11) + 30,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Worker beetle",
+                    healthRange: [30, 40] // min 30, max 40 (30 + random 0-10)
                 },
                 { 
-                    name: "Bruiser beetle", 
-                    maxHealth: () => Math.floor(Math.random() * 16) + 35,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Bruiser beetle",
+                    healthRange: [35, 50] // min 35, max 50 (35 + random 0-15)
                 }
             ],
             "elder": [
                 { 
-                    name: "Elder beetle", 
-                    maxHealth: () => Math.floor(Math.random() * 6) + 35,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Elder beetle",
+                    healthRange: [35, 40] // min 35, max 40 (35 + random 0-5)
                 },
                 { 
-                    name: "Toxic elder", 
-                    maxHealth: () => Math.floor(Math.random() * 6) + 20,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Toxic elder",
+                    healthRange: [20, 25] // min 20, max 25 (20 + random 0-5)
                 }
             ],
             "spider": [
                 { 
-                    name: "Web weaver", 
-                    maxHealth: () => Math.floor(Math.random() * 6) + 15,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Web weaver",
+                    healthRange: [15, 20] // min 15, max 20 (15 + random 0-5)
                 },
                 { 
-                    name: "Hunter spider", 
-                    maxHealth: () => Math.floor(Math.random() * 11) + 20,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Hunter spider",
+                    healthRange: [20, 30] // min 20, max 30 (20 + random 0-10)
                 },
                 { 
-                    name: "Toxic spider", 
-                    maxHealth: () => Math.floor(Math.random() * 16) + 30,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Toxic spider",
+                    healthRange: [30, 45] // min 30, max 45 (30 + random 0-15)
                 }
             ],
             "parasite": [
                 { 
-                    name: "larval parasite", 
-                    maxHealth: () => Math.floor(Math.random() * 6) + 15,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "larval parasite",
+                    healthRange: [15, 20] // min 15, max 20 (15 + random 0-5)
                 },
                 { 
-                    name: "Mature parasite", 
-                    maxHealth: () => Math.floor(Math.random() * 11) + 20,
-                    info: function() {
-                        return `Health: ${this.currentHealth || this.maxHealth()} / ${this.maxHealth()}`;
-                    }
+                    name: "Mature parasite",
+                    healthRange: [20, 30] // min 20, max 30 (20 + random 0-10)
                 }
             ]
-            };
+        };
         
         // Battle configurations
         const battles = {
@@ -956,8 +873,17 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             const variants = tokenVariants[tokenType];
             const variant = variants[Math.floor(Math.random() * variants.length)];
             
-            // Initialize current health
-            variant.currentHealth = variant.maxHealth();
+            // Calculate random health within the range
+            const healthRange = variant.healthRange;
+            const maxHealth = healthRange[0] + Math.floor(Math.random() * (healthRange[1] - healthRange[0] + 1));
+            
+            // Store the token's data
+            token.tokenData = {
+                type: tokenType,
+                variant: variant,
+                currentHealth: maxHealth, // Start with full health
+                maxHealth: maxHealth
+            };
             
             // Set token text and data
             token.textContent = variant.name;
@@ -966,13 +892,25 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             // Create info box container
             const infoBox = document.createElement('div');
             infoBox.className = 'token-info';
-            infoBox.style.pointerEvents = 'auto'; // Allow events on the info box
+            infoBox.style.pointerEvents = 'auto';
             
             // Create stats display
             const statsDisplay = document.createElement('div');
+            
+            // Update function that uses the token's stored data
             const updateStatsDisplay = () => {
-                statsDisplay.textContent = variant.info();
+                statsDisplay.textContent = 
+                    `Health: ${token.tokenData.currentHealth} / ${token.tokenData.maxHealth}
+        Power: +1    Agility: -1    Endurance: -1
+        Wit: -1    Insight: +1    Allure: +1
+        Advantage: +1    Swiftness: 11    Spirit: 13
+        (Body slam [Ally] [Attack] [10 FT]:) Deal 1D6 + PWR damage and the target makes an END save against Maggot, on fail they move 5 less FT on their next movement action (blinks, teleports, and jumps excluded) [3 TP]
+        (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
+        [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
+        (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
+        (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
             };
+            
             updateStatsDisplay(); // Initial display
             
             infoBox.appendChild(statsDisplay);
@@ -998,35 +936,18 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 btn.style.padding = '3px 8px';
                 btn.style.cursor = 'pointer';
                 
-                // Add debug info to the button
-                btn.dataset.debugValue = button.value;
-                
-                // Prevent drag from starting when clicking buttons
-                btn.addEventListener('mousedown', e => {
-                    console.log(`Button mousedown: ${button.text} (value: ${button.value})`);
-                    e.stopPropagation();
-                });
-                
                 btn.addEventListener('click', (e) => {
-                    console.log(`Button clicked: ${button.text} (value: ${button.value})`);
                     e.stopPropagation();
-                    e.preventDefault(); // Add this for extra safety
+                    e.preventDefault();
                     
-                    // Update health, ensuring it doesn't go below 0 or above max
-                    variant.currentHealth = Math.max(0, 
-                        Math.min(variant.maxHealth(), 
-                            variant.currentHealth + button.value));
-                    
-                    // Debug log the health change
-                    console.log(`Health changed by ${button.value}. New health: ${variant.currentHealth}/${variant.maxHealth()}`);
+                    // Update the token's current health
+                    token.tokenData.currentHealth = Math.max(0, 
+                        Math.min(token.tokenData.maxHealth, 
+                            token.tokenData.currentHealth + button.value));
                     
                     // Update the display
                     updateStatsDisplay();
                 });
-                
-                // Add mouseenter/mouseleave for additional debugging
-                btn.addEventListener('mouseenter', () => console.log(`Mouse entered ${button.text} button`));
-                btn.addEventListener('mouseleave', () => console.log(`Mouse left ${button.text} button`));
                 
                 healthControls.appendChild(btn);
             });
@@ -1050,16 +971,13 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
                 const infoBox = this.querySelector('.token-info');
                 if (infoBox) {
                     infoBox.style.display = infoBox.style.display === 'block' ? 'none' : 'block';
-                    // When showing, bring to front
                     if (infoBox.style.display === 'block') {
                         infoBox.style.zIndex = '1001';
                     }
                 }
             });
             
-            // Only start drag on the token itself, not its children
             token.addEventListener('mousedown', function(e) {
-                // Only start drag if clicking directly on the token (not its children)
                 if (e.target === this) {
                     startDrag(e);
                 }
