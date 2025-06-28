@@ -914,7 +914,9 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             (Vomit [Ally] [Attack] [10 FT]:) Deal 2D4 Poison damage and inflict Blind 2, leaves Sludge on all ground tiles in a 5 FT area around the target [3 TP, 3 Mana]
             [Sludge is a special terrain tile that deals 1 Poison damage to any non-Maggot unit that enters it, crosses over it, or gets knocked into it, using [Water] on Sludge removes it. Sludge lasts until the end of combat]
             (Burrow:) Maggot burrows into the ground and cannot be targeted. At the start of its next turn, if it's still underground it gets healed to full health and creates Sludge in a 5 FT range around it. [Terrain] spells can lift the Maggot out of Burrow and inflict Stun 6 [1 TP]
-            (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}`;
+            (Wriggle:) Move up to 10 FT and create Sludge on tiles this unit passes over [0 TP] {Once per turn}
+            (Burst on death:) When this unit is killed, all units in a 10 FT range make an END save against Maggot (enemies get a -1). Any unit that fails takes 4 + 1D4 Poison damage and gains Parasite
+            [Parasite is a debuff that deals 1D4 damage at the start of the units turn and the target makes an ALL save of 13+, on fail their next action has a -2 to Hit. Parasite can be removed with a Medkit, Crawler bait, and or Sound canister as long as it’s used within a 5 FT range of the target. Passing the ALL save at the start of a turn removes Parasite. Parasite is removed after combat. Any spell that removes debuffs can remove Parasite.]`;
             
                 // Add the variant-specific burst ability
                 if (variant.displayText) {
