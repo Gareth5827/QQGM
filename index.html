@@ -807,8 +807,15 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
         
         // Show the kill page
         function showKillPage() {
-            document.getElementById('TextBox').innerHTML = 
-                "You have failed... As you frantically make your way to the drop point, dark robed figures quickly surround you and everything fades to black. You have died.<br><br>Type \"retry\" to try again.";
+            const killContent = `
+                <h2 style="color: #ff4444;">YOU HAVE FAILED</h2>
+                <p>As you frantically make your way to the drop point, dark robed figures quickly surround you and everything fades to black.</p>
+                <p>The TaskMaster has marked you as a defector. The gas valve activates...</p>
+                <p style="font-size: 1.2em; margin-top: 20px;">You have died.</p>
+                <p style="margin-top: 30px;"><i>Type "retry" to try again from the beginning.</i></p>
+            `;
+            document.getElementById('TextBox').innerHTML = killContent;
+            document.getElementById('InputField').focus();
         }
         
         // Format text with () as bold and [] as italic
@@ -1100,12 +1107,18 @@ Upon making your way out of the vine filled wasteland, you see a huge dirt tunne
             const input = document.getElementById('InputField').value.toLowerCase().trim();
             document.getElementById('InputField').value = '';
         
-            // Handle retry first
-            if (tp <= 0 && input === 'retry') {
-                tp = 5;
-                updateTP();
-                displayPage(1);
-                return;
+            // Special case for retry after death
+            if (tp <= 0) {
+                if (input === 'retry') {
+                    // Reset game state
+                    tp = 5;
+                    updateTP();
+                    displayPage(1);
+                    return;
+                } else {
+                    // Ignore any other input while dead
+                    return;
+                }
             }
         
             // Check if input matches a battle command
